@@ -21,5 +21,25 @@ public class Main
 
         new JavaIndexOfMatching(pattern, args[0]);
         new NaiveMatching(pattern, args[0]);
+        
+        
+        // testing
+        
+        pattern = "aat";
+        String text = "caaatacaagggagaaattatgatattctcagataaacaaaagctaacagagttcatgaccattaaaccttgcctacaagaaatgctaaagggagtgcttcaggtggaaatgaaaggatgctatatggcaactcaaagttgtatgaagaaataaagatatccagttatgtgtacattttttaaaaatcatgcttcaatatcccacaaacaagctgtgagcaccctgcccaggtgaccaggtaaccagtattttaaagctggtccctgccacaattcctcttcttgtcttcccctactgtgacctagtgacattgaaacactctagtaaaagtgtttttgcttgtgtcctccaccttgactcccagtaaaggcacttgcccagggatcccatctctcttgcctacccatctgcttgattgagcctgctccttgggagctccttccacatggcttcctgcatggcctgccctacttctgtctctaggaactgtgagtatgcctcttcatatgaacttttcatggccatgttagagtgatcctctaagattcaaccagcaggagtcactctaacattttctatagtaatggcaatgaggatgggatcattctaaactcaggtggaaagttcctagggaatgcctttgactcatgacttactgatttgctactctgattggctccacaatttgagaaggctttttaccctgatgactttcttgtgctatgctatgtacagctttgtgttgccttttggagtgctgccatggctctccatcctgaagcgaggatcctgttccaatatcaataatgacatccacctttctccaagagcacaagatgatataacattggtaacacctcttcaaagaagattcatgtgatatgcatattaatgtcacataatccagcacctgtaagttttttttgggatgcctgtggcaacatattcttcatttacaaattttacttacaaattaaaatcaacagacactcctgttagtgtcattaaatgaattaaacaaaaatatctctcctctgtaaagactttggctgtgtctttcatgcctcttggagtctctagaccactcatgatggctatatatttcctcagggccttgatgcaaaaataatgctctttatggcctacgctgtactccattaaaacaactgactggttacccactagaatctcctgatttggattccagatttgaagataataccctcctgtttcaatcattaaccataaattgccccacaggccaggctctgctcatctgaaatgacacccatcggaatttaaacttccactgcaacacaaaattaaaattgctgccaggtacagctgcacacctttctgttgacagttggcattattactacttggtttgttgatgcaacaatcctcaaccaaatactagcaaactgaattgaacagca";
+        
+        byte aPattern[] = new byte[pattern.length()];
+        for (int i = 0; i < pattern.length(); i++ ) {
+        	aPattern[i] = (byte) pattern.charAt(i);
+        	System.out.println(aPattern[i]);
+        }
+        
+        byte aText[] = new byte[text.length()];
+        for (int i = 0; i < text.length(); i++ ) {
+        	aText[i] = (byte) text.charAt(i);
+        	System.out.println(aText[i]);
+        }
+        
+        new KMP(aPattern, new PatternAnalysing(aPattern).getPraefix(), aText);
     }
 }
