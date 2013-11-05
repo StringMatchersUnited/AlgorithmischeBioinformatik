@@ -19,7 +19,7 @@ public class KMP
     		patternPosition++;
     		
     		if (patternPosition == pattern.length) {
-    			System.out.println("Treffer von: " + (textPosition - pattern.length + 1) + " bis " + textPosition);
+//    			System.out.println("Treffer von: " + (textPosition - pattern.length + 1) + " bis " + textPosition);
     			hits++;
     			patternPosition = praefix[patternPosition];
     		}

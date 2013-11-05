@@ -4,7 +4,7 @@ public class boyerMoore
 {
     public boyerMoore( byte[] pattern, byte[] text)
     {
-    	int skipTable[] = getSkipTable(pattern);
+//    	int skipTable[] = getSkipTable(pattern);
     	int nextTable[] = getNextTable(pattern);
     	int hits = 0;
     	
@@ -12,11 +12,12 @@ public class boyerMoore
     		for (j = pattern.length - 1; pattern[j] == text[i]; --i, --j) {
     			if (j == 0) {
     				hits++;
-    				System.out.println("Stelle:" + (i + 1) + " bis " + (i + pattern.length));
+                    if (hits <= 10)
+    				System.out.println("Stelle:" + (i + 1));
     				break;
     			}
     		}
-    		i += max(nextTable[pattern.length - 1 - j], skipTable[text[i]]);
+    		i += nextTable[pattern.length - 1 - j];
     	}
     	
     	System.out.println("Treffer: " + hits);

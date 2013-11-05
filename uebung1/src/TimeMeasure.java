@@ -1,14 +1,19 @@
+import java.util.HashMap;
+
 public class TimeMeasure
 {
-    private static long start;
+    private static HashMap<String, Long> startTimes = new HashMap<String, Long>();
 
-    public static void start()
+    public static void start( String what )
     {
-        start = System.nanoTime();
+        startTimes.put(what, System.nanoTime());
     }
 
-    public static void stop()
+    public static void stop( String what )
     {
-        System.out.println((System.nanoTime() - start)/1e6 + "ms");
+        if ( startTimes.containsKey(what) )
+        {
+            System.out.println(what + ": " + ( System.nanoTime() - startTimes.get(what) ) / 1e6 + "ms");
+        }
     }
 }

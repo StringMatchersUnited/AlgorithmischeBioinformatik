@@ -23,6 +23,8 @@ public class PatternAnalysing
     		position++;
     		praefixLength++;
     		praefix[position] = praefixLength;
+    		
+//    		System.out.println(praefix[position]);
     	}
     	
     }
