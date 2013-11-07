@@ -5,3 +5,6 @@ out/
 
 # JAVA
 *.class
+
+# Maven
+target/

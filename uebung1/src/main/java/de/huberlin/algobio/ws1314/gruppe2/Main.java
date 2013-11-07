@@ -1,3 +1,10 @@
+package de.huberlin.algobio.ws1314.gruppe2;
+
+import de.huberlin.algobio.ws1314.gruppe2.algorithms.boyerMoore;
+import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
+import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
+import de.huberlin.algobio.ws1314.gruppe2.tools.TimeMeasure;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;

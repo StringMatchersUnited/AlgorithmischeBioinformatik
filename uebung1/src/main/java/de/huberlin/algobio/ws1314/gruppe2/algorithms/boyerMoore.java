@@ -1,3 +1,5 @@
+package de.huberlin.algobio.ws1314.gruppe2.algorithms;
+
 public class boyerMoore
 {
     public boyerMoore( byte[] pattern, int patternLength, byte[] template, int templateLength)

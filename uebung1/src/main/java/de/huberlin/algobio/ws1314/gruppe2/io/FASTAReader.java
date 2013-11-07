@@ -1,3 +1,7 @@
+package de.huberlin.algobio.ws1314.gruppe2.io;
+
+import de.huberlin.algobio.ws1314.gruppe2.tools.TimeMeasure;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
@@ -13,7 +17,6 @@ public class FASTAReader
      * 3: in sequence data
      */
     private byte parseState = 0;
-
 
 
     // List of found sequences

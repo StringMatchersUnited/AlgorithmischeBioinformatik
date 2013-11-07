@@ -1,3 +1,5 @@
+package de.huberlin.algobio.ws1314.gruppe2.tools;
+
 import java.util.HashMap;
 
 public class TimeMeasure

@@ -1,3 +1,5 @@
+package de.huberlin.algobio.ws1314.gruppe2.io;
+
 public class FASTASequence
 {
     public byte[] description;
