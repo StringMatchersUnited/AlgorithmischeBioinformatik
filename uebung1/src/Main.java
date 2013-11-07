@@ -1,13 +1,14 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main
 {
     public static void main( String[] args )
     {
-        FASTAReader template;
-        FASTAReader patterns;
+        FASTASequence template;
+        ArrayList<FASTASequence> patterns;
 
         String templateFileName;
         String patternFileName;
@@ -37,8 +38,8 @@ public class Main
 
         try
         {
-            template = new FASTAReader(templateFileName);
-            patterns = new FASTAReader(patternFileName);
+            template = new FASTAReader(templateFileName).getFastaSequence(0);
+            patterns = new FASTAReader(patternFileName).getFastaSequences();
         }
         catch ( IOException e )
         {
@@ -46,24 +47,21 @@ public class Main
             return;
         }
 
-        byte[] templateSequenceData = template.getData(0);
-        byte[] patternSequenceData;
-
 
         System.out.println();
         System.out.println("BOYERMOORE MATCHING");
         System.out.println();
 
+
         TimeMeasure.start("Boyer-Moore - All patterns");
-        for ( int i = 0; i < patterns.getFastaSequences().size(); ++i )
+        for ( int i = 0; i < patterns.size(); ++i )
         {
-            patternSequenceData = patterns.getData(i);
             TimeMeasure.start("Boyer-Moore - Pattern " + i);
-            new boyerMoore(patternSequenceData, templateSequenceData);
+            new boyerMoore(patterns.get(i).sequence, patterns.get(i).sequenceLength, template.sequence,
+                           template.sequenceLength);
             TimeMeasure.stop("Boyer-Moore - Pattern " + i);
         }
         TimeMeasure.stop("Boyer-Moore - All patterns");
-
 
 
 //        System.out.println();

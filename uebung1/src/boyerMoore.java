@@ -1,34 +1,21 @@
-import java.util.Arrays;
-
 public class boyerMoore
 {
-    public boyerMoore( byte[] patternLong, byte[] text)
+    public boyerMoore( byte[] pattern, int patternLength, byte[] template, int templateLength)
     {
-        int end = 0;
-        for (int i = patternLong.length -1; i>=0; --i)
-        {
-            if (patternLong[i] == 0)
-                end = i;
-            else
-                break;
-        }
-
-        byte[] pattern = Arrays.copyOfRange(patternLong, 0, end);
-
-    	int skipTable[] = getSkipTable(pattern);
-    	int nextTable[] = getNextTable(pattern);
+    	int skipTable[] = getSkipTable(pattern, patternLength);
+    	int nextTable[] = getNextTable(pattern, patternLength);
     	int hits = 0;
     	
-    	for (int i = pattern.length - 1, j; i < text.length;) {
-    		for (j = pattern.length - 1; pattern[j] == text[i]; --i, --j) {
+    	for (int i = patternLength - 1, j; i < templateLength;) {
+    		for (j = patternLength - 1; pattern[j] == template[i]; --i, --j) {
     			if (j == 0) {
     				hits++;
                     if (hits <= 10)
-    				    System.out.println("Stelle:" + (i + 1) + " bis " + (i + pattern.length));
+    				    System.out.println("Stelle:" + (i + 1) + " bis " + (i + patternLength));
     				break;
     			}
     		}
-    		i += max(nextTable[pattern.length - 1 - j], skipTable[text[i]]);
+    		i += max(nextTable[patternLength - 1 - j], skipTable[template[i]]);
     	}
     	
     	System.out.println("Treffer: " + hits);
@@ -43,16 +30,16 @@ public class boyerMoore
     }
     
     // "bad character matching"
-    private int[] getSkipTable (byte[] pattern) {
+    private int[] getSkipTable (byte[] pattern, int patternLength) {
     	final int ALPHABET_SIZE = 256;
     	int[] table = new int[ALPHABET_SIZE];
     	
     	for (int i = 0; i < table.length; ++i) {
-    		table[i] = pattern.length;
+    		table[i] = patternLength;
     	}
     	
-    	for (int i = 0; i < pattern.length; ++i) {
-    		table[pattern[i]] = pattern.length - 1 - i;
+    	for (int i = 0; i < patternLength; ++i) {
+    		table[pattern[i]] = patternLength - 1 - i;
     	}
     	
     	// testing
@@ -65,20 +52,20 @@ public class boyerMoore
     }
     
     // "good character matching"
-    private int[] getNextTable (byte[] pattern) {
-    	int[] table = new int[pattern.length];
-    	int lastPrefixPosition = pattern.length;
+    private int[] getNextTable (byte[] pattern, int patternLength) {
+    	int[] table = new int[patternLength];
+    	int lastPrefixPosition = patternLength;
     	
-    	for (int i = pattern.length - 1; i >= 0; --i) {
-    		if (isPrefix(pattern, i + 1)) {
+    	for (int i = patternLength - 1; i >= 0; --i) {
+    		if (isPrefix(pattern, patternLength, i + 1)) {
     			lastPrefixPosition = i + 1;
     		}
-    		table[pattern.length - 1 - i] = lastPrefixPosition - i + pattern.length - 1;
+    		table[patternLength - 1 - i] = lastPrefixPosition - i + patternLength - 1;
     	}
     	
-    	for (int i = 0; i < pattern.length - 1; ++i) {
-    		int sLen = suffixLength(pattern, i);
-    		table[sLen] = pattern.length - 1 - i + sLen;
+    	for (int i = 0; i < patternLength - 1; ++i) {
+    		int sLen = suffixLength(pattern, patternLength, i);
+    		table[sLen] = patternLength - 1 - i + sLen;
     	}
     	
     	// testing
@@ -90,8 +77,8 @@ public class boyerMoore
     	return table;
     }
     
-    private boolean isPrefix(byte[] pattern, int position) {
-    	for (int i = position, j = 0; i < pattern.length; ++i, ++j) {
+    private boolean isPrefix(byte[] pattern, int patternLength, int position) {
+    	for (int i = position, j = 0; i < patternLength; ++i, ++j) {
     		if (pattern[i] != pattern[j]) {
     			return false;
     		}
@@ -99,9 +86,9 @@ public class boyerMoore
     	return true;
     }
     
-    private int suffixLength(byte[] pattern, int position) {
+    private int suffixLength(byte[] pattern, int patternLength, int position) {
     	int length = 0;
-    	for (int i = position, j = pattern.length - 1; i >= 0 && pattern[i] == pattern[j]; --i, --j) {
+    	for (int i = position, j = patternLength - 1; i >= 0 && pattern[i] == pattern[j]; --i, --j) {
     		length += 1;
     	}
     	return length;

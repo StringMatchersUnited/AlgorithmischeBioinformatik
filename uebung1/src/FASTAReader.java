@@ -15,23 +15,6 @@ public class FASTAReader
     private byte parseState = 0;
 
 
-    private class FASTASequence
-    {
-        byte[] description;
-        byte[] comment;
-        byte[] sequence;
-
-        public FASTASequence()
-        {
-        }
-
-        @Override
-        public String toString()
-        {
-            return "description length: " + description.length + ", comment length: " + comment.length +
-                   ", sequence length: " + sequence.length;
-        }
-    }
 
     // List of found sequences
     private ArrayList<FASTASequence> fastaSequences = new ArrayList<FASTASequence>();
@@ -133,6 +116,7 @@ public class FASTAReader
                 if ( parseState == 1 )
                 {
                     currentFastaSequence.description = currentData;
+                    currentFastaSequence.descriptionLength = i - lastStateChangeAt - newLines + 1;
                     currentData = new byte[mb.remaining()];
                     setParseState(mb.get(i + 1));
                     lastStateChangeAt = i + 1;
@@ -142,6 +126,7 @@ public class FASTAReader
                 else if ( parseState == 2 )
                 {
                     currentFastaSequence.comment = currentData;
+                    currentFastaSequence.commentLength = i - lastStateChangeAt - newLines + 1;
                     currentData = new byte[mb.remaining()];
                     setParseState(mb.get(i + 1));
                     lastStateChangeAt = i + 1;
@@ -154,6 +139,7 @@ public class FASTAReader
                     if ( mb.get(i + 1) == 62 )
                     {
                         currentFastaSequence.sequence = currentData;
+                        currentFastaSequence.sequenceLength = i - lastStateChangeAt - newLines + 1;
                         fastaSequences.add(currentFastaSequence);
                         currentData = new byte[mb.remaining()];
                         currentFastaSequence = new FASTASequence();
@@ -170,8 +156,9 @@ public class FASTAReader
         }
 
         // finish the last FASTASequence
-        if (mb.get(lastIndex) != 10)
+        if ( mb.get(lastIndex) != 10 )
             currentData[lastIndex - lastStateChangeAt - newLines] = mb.get(lastIndex);
+        currentFastaSequence.sequenceLength = lastIndex - lastStateChangeAt - newLines + 1;
         currentFastaSequence.sequence = currentData;
         fastaSequences.add(currentFastaSequence);
     }
@@ -182,20 +169,23 @@ public class FASTAReader
         // Testing only
         try
         {
-            FASTAReader fr = new FASTAReader("../resources/sequence.fasta");
+            FASTAReader fr = new FASTAReader("../resources/pattern_aufgabe.fasta");
 
             for ( int i = 0; i < fr.getFastaSequences().size(); ++i )
             {
+                System.out.println("Description length: " + fr.getFastaSequence(i).descriptionLength);
+                System.out.println("Comment length: " + fr.getFastaSequence(i).commentLength);
+                System.out.println("Sequence length: " + fr.getFastaSequence(i).sequenceLength);
                 for ( byte b : fr.getDescription(i) )
                 {
-                    if (b != 0)
+                    if ( b != 0 )
                         System.out.print((char) b);
                 }
                 System.out.println();
 
                 for ( byte b : fr.getData(i) )
                 {
-                    if (b != 0)
+                    if ( b != 0 )
                         System.out.print((char) b);
                 }
                 System.out.println();
