@@ -58,10 +58,9 @@ public class Main
         for ( int i = 0; i < patterns.getFastaSequences().size(); ++i )
         {
             patternSequenceData = patterns.getData(i);
-            System.out.println("\nPattern length: " + patternSequenceData.length);
-//            TimeMeasure.start("Boyer-Moore - Pattern " + i);
+            TimeMeasure.start("Boyer-Moore - Pattern " + i);
             new boyerMoore(patternSequenceData, templateSequenceData);
-//            TimeMeasure.stop("Boyer-Moore - Pattern " + i);
+            TimeMeasure.stop("Boyer-Moore - Pattern " + i);
         }
         TimeMeasure.stop("Boyer-Moore - All patterns");
 

@@ -1,10 +1,21 @@
-
+import java.util.Arrays;
 
 public class boyerMoore
 {
-    public boyerMoore( byte[] pattern, byte[] text)
+    public boyerMoore( byte[] patternLong, byte[] text)
     {
-//    	int skipTable[] = getSkipTable(pattern);
+        int end = 0;
+        for (int i = patternLong.length -1; i>=0; --i)
+        {
+            if (patternLong[i] == 0)
+                end = i;
+            else
+                break;
+        }
+
+        byte[] pattern = Arrays.copyOfRange(patternLong, 0, end);
+
+    	int skipTable[] = getSkipTable(pattern);
     	int nextTable[] = getNextTable(pattern);
     	int hits = 0;
     	
@@ -13,11 +24,11 @@ public class boyerMoore
     			if (j == 0) {
     				hits++;
                     if (hits <= 10)
-    				System.out.println("Stelle:" + (i + 1));
+    				    System.out.println("Stelle:" + (i + 1) + " bis " + (i + pattern.length));
     				break;
     			}
     		}
-    		i += nextTable[pattern.length - 1 - j];
+    		i += max(nextTable[pattern.length - 1 - j], skipTable[text[i]]);
     	}
     	
     	System.out.println("Treffer: " + hits);

@@ -116,7 +116,7 @@ public class FASTAReader
         int lastStateChangeAt = 0;
 
         // byte-array for current data (which may be description, comment or sequence data)
-        byte[] currentData;
+        byte[] currentData = new byte[mb.remaining()];
 
         // count newlines to substract that value when filling the byte-array
         int newLines = 0;
@@ -132,16 +132,8 @@ public class FASTAReader
                 // in description
                 if ( parseState == 1 )
                 {
-                    int nl = 0;
-                    currentData = new byte[i - lastStateChangeAt - newLines + 1];
-                    for ( int x = 0; x < ( i - lastStateChangeAt + 1 ); ++x )
-                    {
-                        if ( mb.get(x + lastStateChangeAt) != 10 )
-                            currentData[x - nl] = mb.get(x + lastStateChangeAt);
-                        else
-                            ++nl;
-                    }
                     currentFastaSequence.description = currentData;
+                    currentData = new byte[mb.remaining()];
                     setParseState(mb.get(i + 1));
                     lastStateChangeAt = i + 1;
                     newLines = 0;
@@ -149,16 +141,8 @@ public class FASTAReader
                 // in comment
                 else if ( parseState == 2 )
                 {
-                    int nl = 0;
-                    currentData = new byte[i - lastStateChangeAt - newLines + 1];
-                    for ( int x = 0; x < ( i - lastStateChangeAt + 1 ); ++x )
-                    {
-                        if ( mb.get(x + lastStateChangeAt) != 10 )
-                            currentData[x - nl] = mb.get(x + lastStateChangeAt);
-                        else
-                            ++nl;
-                    }
                     currentFastaSequence.comment = currentData;
+                    currentData = new byte[mb.remaining()];
                     setParseState(mb.get(i + 1));
                     lastStateChangeAt = i + 1;
                     newLines = 0;
@@ -169,17 +153,9 @@ public class FASTAReader
                     // new description after that line
                     if ( mb.get(i + 1) == 62 )
                     {
-                        int nl = 0;
-                        currentData = new byte[i - lastStateChangeAt - newLines + 1];
-                        for ( int x = 0; x < ( i - lastStateChangeAt + 1 ); ++x )
-                        {
-                            if ( mb.get(x + lastStateChangeAt) != 10 )
-                                currentData[x - nl] = mb.get(x + lastStateChangeAt);
-                            else
-                                ++nl;
-                        }
                         currentFastaSequence.sequence = currentData;
                         fastaSequences.add(currentFastaSequence);
+                        currentData = new byte[mb.remaining()];
                         currentFastaSequence = new FASTASequence();
                         setParseState(mb.get(i + 1));
                         lastStateChangeAt = i + 1;
@@ -187,21 +163,15 @@ public class FASTAReader
                     }
                 }
             }
+            else
+            {
+                currentData[i - lastStateChangeAt - newLines] = mb.get(i);
+            }
         }
 
         // finish the last FASTASequence
-        int nl = 0;
-        currentData = new byte[lastIndex - lastStateChangeAt - newLines];
-        for ( int x = 0; x < ( lastIndex - lastStateChangeAt ); ++x )
-        {
-            if ( mb.get(x + lastStateChangeAt) != 10 )
-            {
-                currentData[x - nl] = mb.get(x + lastStateChangeAt);
-            }
-            else
-                ++nl;
-        }
-
+        if (mb.get(lastIndex) != 10)
+            currentData[lastIndex - lastStateChangeAt - newLines] = mb.get(lastIndex);
         currentFastaSequence.sequence = currentData;
         fastaSequences.add(currentFastaSequence);
     }
@@ -214,20 +184,22 @@ public class FASTAReader
         {
             FASTAReader fr = new FASTAReader("../resources/sequence.fasta");
 
-//            for ( int i = 0; i < fr.getFastaSequences().size(); ++i )
-//            {
-//                for ( byte b : fr.getData(i) )
-//                {
-//                    System.out.print((char) b);
-//                }
-//                System.out.println();
-//
-//                for ( byte b : fr.getDescription(i) )
-//                {
-//                    System.out.print((char) b);
-//                }
-//                System.out.println();
-//            }
+            for ( int i = 0; i < fr.getFastaSequences().size(); ++i )
+            {
+                for ( byte b : fr.getDescription(i) )
+                {
+                    if (b != 0)
+                        System.out.print((char) b);
+                }
+                System.out.println();
+
+                for ( byte b : fr.getData(i) )
+                {
+                    if (b != 0)
+                        System.out.print((char) b);
+                }
+                System.out.println();
+            }
         }
         catch ( IOException e )
         {
