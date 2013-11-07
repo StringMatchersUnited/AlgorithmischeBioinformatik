@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.huberlin.algobio.ws1314.gruppe2</groupId>
     <artifactId>Gruppe2_Uebung1</artifactId>
-    <name>Algorithmische Bioinformatik WS13/14 - Gruppe 2 - Übung 1</name>
+    <name>Algorithmische Bioinformatik WS13_14 Gruppe 2 Übung 1</name>
     <packaging>jar</packaging>
     <version>1.0</version>
 
@@ -16,9 +16,23 @@
         <finalName>${project.name} ${project.version}</finalName>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>src/main/java</directory>
                 <filtering>false</filtering>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>2.3.2</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>de.huberlin.algobio.ws1314.gruppe2.Uebung1</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
