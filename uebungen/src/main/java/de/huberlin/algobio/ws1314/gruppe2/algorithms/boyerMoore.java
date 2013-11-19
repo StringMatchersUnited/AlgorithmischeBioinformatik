@@ -1,5 +1,7 @@
 package de.huberlin.algobio.ws1314.gruppe2.algorithms;
 
+import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
+
 public class boyerMoore
 {
     public boyerMoore( byte[] pattern, int patternLength, byte[] template, int templateLength)
@@ -7,39 +9,44 @@ public class boyerMoore
     	int skipTable[] = getSkipTable(pattern, patternLength);
     	int nextTable[] = getNextTable(pattern, patternLength);
     	int hits = 0;
-    	int comp = 0;		// vergleiche
-    						// ersten 10 als Liste?
-    	String sPattern;	// byte[] noch in String
-    	
+    	int comp = 0;		              // vergleiche
+    	int[] firstTenHits = new int[10]; // ersten 10 als Liste?
+        double expectedHits = Tools.calcExpectation(pattern, patternLength, template, templateLength);
+
     	for (int i = patternLength - 1, j; i < templateLength;) {
     		for (j = patternLength - 1; pattern[j] == template[i]; --i, --j) {
-    			comp++;	// hier richtig?
+    			comp++;	// hier richtig? glaube schon! ;)
     			if (j == 0) {
     				hits++;
                     if (hits <= 10)
-    				    System.out.println("Stelle:" + (i + 1) + " bis " + (i + patternLength));
+                        firstTenHits[hits-1] = i+1;
     				break;
     			}
     		}
-    		i += max(nextTable[patternLength - 1 - j], skipTable[template[i]]);
+    		i += Math.max(nextTable[patternLength - 1 - j], skipTable[template[i]]);
     	}
     	
-    	System.out.println("> " + sPattern);
-    	System.out.println(">> Length: " + pattern.length);
+    	System.out.println("> " + Tools.byteArrayToString(pattern, patternLength));
+    	System.out.println(">> Length: " + patternLength);
     	System.out.println(">> Occurrences: " + hits);
-    	System.out.println(">> expected: ");  // erwartungswert aus count
+    	System.out.println(">> Expected: " + String.format("%f", expectedHits));  // erwartungswert aus count
     	System.out.println(">> Char-Comparisons: " + comp);
-    	System.out.println(">> Positions: " ); // ersten 10 Positionen
+    	System.out.println(">> Positions: " + printPositions(firstTenHits)); // ersten 10 Positionen
     }
-    
-    private int max(int first, int second) {
-    	if (first >= second) {
-    		return first;
-    	} else {
-    		return second;
-    	}
+
+    private String printPositions(int[] positions)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(positions[0]);
+        for (int i=1; i<positions.length; ++i)
+        {
+            sb.append(", ").append(positions[i]);
+        }
+
+        return sb.toString();
     }
-    
+
+
     // "bad character matching"
     private int[] getSkipTable (byte[] pattern, int patternLength) {
     	final int ALPHABET_SIZE = 256;

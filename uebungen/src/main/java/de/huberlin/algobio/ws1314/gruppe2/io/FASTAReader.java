@@ -1,7 +1,5 @@
 package de.huberlin.algobio.ws1314.gruppe2.io;
 
-import de.huberlin.algobio.ws1314.gruppe2.tools.TimeMeasure;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
@@ -35,27 +33,11 @@ public class FASTAReader
     }
 
 
-    public byte[] getData( int sequenceNr )
-    {
-        return fastaSequences.get(sequenceNr).sequence;
-    }
-
-    public byte[] getDescription( int sequenceNr )
-    {
-        return fastaSequences.get(sequenceNr).description;
-    }
-
-    public byte[] getComment( int sequenceNr )
-    {
-        return fastaSequences.get(sequenceNr).comment;
-    }
-
-
     public FASTAReader( String fileName ) throws IOException
     {
-        TimeMeasure.start("Open of " + fileName);
+//        TimeMeasure.start("Open of " + fileName);
         open(fileName);
-        TimeMeasure.stop("Open of " + fileName);
+//        TimeMeasure.stop("Open of " + fileName);
     }
 
 
@@ -179,14 +161,14 @@ public class FASTAReader
                 System.out.println("Description length: " + fr.getFastaSequence(i).descriptionLength);
                 System.out.println("Comment length: " + fr.getFastaSequence(i).commentLength);
                 System.out.println("Sequence length: " + fr.getFastaSequence(i).sequenceLength);
-                for ( byte b : fr.getDescription(i) )
+                for ( byte b : fr.getFastaSequence(i).description )
                 {
                     if ( b != 0 )
                         System.out.print((char) b);
                 }
                 System.out.println();
 
-                for ( byte b : fr.getData(i) )
+                for ( byte b : fr.getFastaSequence(i).sequence )
                 {
                     if ( b != 0 )
                         System.out.print((char) b);

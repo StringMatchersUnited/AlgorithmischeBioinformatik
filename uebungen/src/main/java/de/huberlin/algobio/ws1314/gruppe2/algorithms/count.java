@@ -1,10 +1,14 @@
-import java.io.*;
+package de.huberlin.algobio.ws1314.gruppe2.algorithms;
+
+import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
+
+import java.io.IOException;
 
 
 
 public class count
 {
-    public count( String[] file)
+    public count( String file)
     {
     	int a = 0;
     	int c = 0;
@@ -13,47 +17,16 @@ public class count
     	int n = 0;
     	int z = 0;
     	char b;
-    	
-//        FileReader fastaReader;
-//        BufferedReader fastaBuffer = null;
-//        StringBuilder fastaString = new StringBuilder();
-//
-//            fastaReader = new FileReader("secquence.fasta");
-//            fastaBuffer = new BufferedReader(fastaReader);
-//            String fastaDescription = fastaBuffer.readLine();
-//            String line = fastaBuffer.readLine();
-//
-//            while (line != null) {
-//                fastaString.append(line);
-//                line = fastaBuffer.readLine();
-//            }
-//    	
-//	    	for (int i = 0; i < fastaString.length(); i++) {
-//	    		b++;
-//	    		
-//	    		if (fastaString.charAt(i) == 'A') {
-//	    			a++;
-//	    		} else if (fastaString.charAt(i) == 'C') {
-//	    			c++;
-//	    		} else if (fastaString.charAt(i) == 'G') {
-//	    			g++;
-//	    		} else if (fastaString.charAt(i) == 'T') {
-//	    			t++;
-//	    		} else if (fastaString.charAt(i) == 'N') {
-//	    			n++;
-//	    		}
-//	    	}
-	    	
-	    
-	    	
+
 	    	try
 	        {
-	            FASTAReader fr = new FASTAReader("sequence.fasta");
+	            FASTAReader fr = new FASTAReader(file);
 	            for ( int i = 0; i < fr.getFastaSequences().size(); ++i )
 	            {
+                    byte[] data = fr.getFastaSequence(i).sequence;
 	                for ( int j = 0; j < fr.getFastaSequence(i).sequenceLength; ++j )
 	                {
-	                	b = (char) fr.getFASTASequenceData(i, j);
+	                	b = (char) data[j];
 	                	
 	    	    		if (b == 'a') {
 	    	    			a++;
@@ -112,5 +85,10 @@ public class count
     	System.out.println("aaaaaaaaaaaaaaa: " + erg);
     	erg = Math.pow((double)a/alle, 20) * Math.pow((double)c/alle, 0) * Math.pow((double)g/alle, 0) * Math.pow((double)t/alle, 0) * Math.pow((double)n/alle, 0) * alle;
     	System.out.println("aaaaaaaaaaaaaaaaaaaa: " + erg);
+    }
+
+    public static void main( String[] args )
+    {
+        new count("src/main/resources/sequence.fasta");
     }
 }
