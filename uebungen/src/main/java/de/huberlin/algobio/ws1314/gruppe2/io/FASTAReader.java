@@ -161,7 +161,7 @@ public class FASTAReader
         // finish the last FASTASequence
         if ( mb.get(lastIndex) != 10 )
             currentData[lastIndex - lastStateChangeAt - newLines] = mb.get(lastIndex);
-        currentFastaSequence.sequenceLength = lastIndex - lastStateChangeAt - newLines + 1;
+        currentFastaSequence.sequenceLength = lastIndex - lastStateChangeAt - newLines;
         currentFastaSequence.sequence = currentData;
         fastaSequences.add(currentFastaSequence);
     }
