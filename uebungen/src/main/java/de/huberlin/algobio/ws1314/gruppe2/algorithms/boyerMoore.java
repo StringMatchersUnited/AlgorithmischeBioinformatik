@@ -7,9 +7,13 @@ public class boyerMoore
     	int skipTable[] = getSkipTable(pattern, patternLength);
     	int nextTable[] = getNextTable(pattern, patternLength);
     	int hits = 0;
+    	int comp = 0;		// vergleiche
+    						// ersten 10 als Liste?
+    	String sPattern;	// byte[] noch in String
     	
     	for (int i = patternLength - 1, j; i < templateLength;) {
     		for (j = patternLength - 1; pattern[j] == template[i]; --i, --j) {
+    			comp++;	// hier richtig?
     			if (j == 0) {
     				hits++;
                     if (hits <= 10)
@@ -20,7 +24,12 @@ public class boyerMoore
     		i += max(nextTable[patternLength - 1 - j], skipTable[template[i]]);
     	}
     	
-    	System.out.println("Treffer: " + hits);
+    	System.out.println("> " + sPattern);
+    	System.out.println(">> Length: " + pattern.length);
+    	System.out.println(">> Occurrences: " + hits);
+    	System.out.println(">> expected: ");  // erwartungswert aus count
+    	System.out.println(">> Char-Comparisons: " + comp);
+    	System.out.println(">> Positions: " ); // ersten 10 Positionen
     }
     
     private int max(int first, int second) {
