@@ -1,0 +1,10 @@
+3.)
+Wie kann das Pattern-Preprocessing in linearer Zeit und linearem Platz durchgeführt werden? (3 Punkte)
+
+
+Welche Eigenschaft sollten Alphabete besitzen um von der Good Suffix Rule zu profitieren? Begründen Sie Ihre Antwort (1 Punkt)
+
+
+4.)
+Im Testdatensatz ist eine Folge von mehreren Pattern enthalten, die jeweils nur aus „a“ bestehen und unterschiedliche Länge haben.
+Erklären Sie, warum die Häufigkeiten der Vorkommen der längeren Pattern so langsam abnehmen.
