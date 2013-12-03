@@ -1,16 +1,16 @@
 package de.huberlin.algobio.ws1314.gruppe2;
 
-import de.huberlin.algobio.ws1314.gruppe2.algorithms.boyerMoore;
+import de.huberlin.algobio.ws1314.gruppe2.algorithms.index;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
-import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
+import de.huberlin.algobio.ws1314.gruppe2.tools.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class Uebung2
+public class Uebung3
 {
     public static void main( String[] args )
     {
