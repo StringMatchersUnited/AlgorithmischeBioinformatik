@@ -7,11 +7,11 @@ import java.util.*;
 
 public class index {
 
-    int q = 3;
+    int q = 2;
     int nextIndex = 0;
     HashMap<String, Integer> qGram = new HashMap<String, Integer>();
     String[] hits = new String[(int) Math.pow(5, q)];
-    String[] lastHits = new String[q - 2];
+    char[] lastHits = new char[q - 1];
 
     public index(byte[] template, String indexFileName) {
 
@@ -20,7 +20,8 @@ public class index {
         }
 
         for (int i = q - 1; i < template.length; i++) {
-            int index = exist(new Byte(template[i]));
+            int index = exist(template[i]);
+            lastHitted(template[i]);
             hits[index] = hits[index] + ":" + i;
         }
         
@@ -40,24 +41,25 @@ public class index {
         }
     }
 
-    private void lastHitted(Byte hit) {
-        for (int i = 0; i < lastHits.length - 1; i++) {
-            lastHits[q - 2 - i] = lastHits[q - 3 - i];
+    private void lastHitted(byte hit) {
+        for (int i = lastHits.length - 1; i >= 1; i++) {
+            lastHits[i] = lastHits[i - 1];
         }
-        lastHits[0] = hit.toString();
+        lastHits[0] = (char) hit;
 //        for (int i = 0; i < lastHits.length; i++) {            
 //            System.out.println(lastHits[i]);
 //        }
 
     }
 
-    private int exist(Byte s) {
+    private int exist(byte s) {
         String search = "";
         
         for (int i = lastHits.length - 1; i >= 0; i--) {
             search = search + lastHits[i];
         }
-        search = search + s.toString();
+        search = search + (char) s;
+        System.out.println(search);
         
         if (qGram.containsKey(search)) {
             return qGram.get(search);
