@@ -45,7 +45,7 @@ public class Uebung3
 	        	
 	        	Tools.tFreq = Tools.getFrequencies(template.sequence, template.sequenceLength);
 	        	
-        		new index(template.sequence, templateIndexFileName);
+        		new index(template.sequence, template.sequenceLength, templateIndexFileName);
 	        	
 	        } else if (args[0].equals("search")) {
 	        	

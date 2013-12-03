@@ -13,13 +13,13 @@ public class index {
     String[] hits = new String[(int) Math.pow(5, q)];
     char[] lastHits = new char[q - 1];
 
-    public index(byte[] template, String indexFileName) {
+    public index(byte[] template, int templateLength, String indexFileName) {
 
         for (int i = 0; i < q - 1; i++) {
             lastHitted(template[i]);
         }
 
-        for (int i = q - 1; i < template.length; i++) {
+        for (int i = q - 1; i < templateLength; i++) {
             int index = exist(template[i]);
             lastHitted(template[i]);
             hits[index] = hits[index] + ":" + i;
@@ -59,7 +59,7 @@ public class index {
             search = search + lastHits[i];
         }
         search = search + (char) s;
-        System.out.println(search);
+        System.out.println(s + "..." + search);
         
         if (qGram.containsKey(search)) {
             return qGram.get(search);
