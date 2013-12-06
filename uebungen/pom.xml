@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.huberlin.algobio.ws1314.gruppe2</groupId>
-    <artifactId>Gruppe2_Uebung1</artifactId>
-    <name>Algorithmische Bioinformatik WS13_14 Gruppe 2 Übung 2</name>
+    <artifactId>Gruppe2_Uebung3</artifactId>
+    <name>Algorithmische Bioinformatik WS13_14 Gruppe 2 Übung 3</name>
     <packaging>jar</packaging>
     <version>1.0</version>
 
@@ -28,7 +28,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.huberlin.algobio.ws1314.gruppe2.Uebung2</mainClass>
+                            <mainClass>de.huberlin.algobio.ws1314.gruppe2.Uebung3</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
