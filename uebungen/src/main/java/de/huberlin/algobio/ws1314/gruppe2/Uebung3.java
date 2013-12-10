@@ -5,17 +5,32 @@ import de.huberlin.algobio.ws1314.gruppe2.algorithms.QGramSearch;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
 import de.huberlin.algobio.ws1314.gruppe2.tools.IntArray;
+import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+class TemplateMetaData implements Serializable
+{
+    public Integer                   templateLength;
+    public HashMap<String, Integer>  tFreq;
+    public HashMap<String, IntArray> qGramIndex;
+
+    public TemplateMetaData( HashMap<String, IntArray> qGramIndex, Integer templateLength,
+                             HashMap<String, Integer> tFreq )
+    {
+        this.qGramIndex = qGramIndex;
+        this.templateLength = templateLength;
+        this.tFreq = tFreq;
+    }
+}
+
 public class Uebung3
 {
+
     public static void main( String[] args )
     {
         FASTASequence template;
@@ -51,13 +66,30 @@ public class Uebung3
                     return;
                 }
 
-                new QGramIndex(q, template.sequence, template.sequenceLength, templateIndexFileName);
+                // get template character frequencies once
+                Tools.tFreq = Tools.getFrequencies(template.sequence, template.sequenceLength);
+
+                QGramIndex qGramIndex = new QGramIndex(q, template.sequence, template.sequenceLength,
+                                                       templateIndexFileName);
+
+                TemplateMetaData templateMetaData = new TemplateMetaData(qGramIndex.getQgramIndex(),
+                                                                         template.sequenceLength, Tools.tFreq);
+
+                try
+                {
+                    ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream(templateIndexFileName));
+                    oo.writeObject(templateMetaData);
+                }
+                catch ( IOException e )
+                {
+                    e.printStackTrace();
+                }
 
             }
             else if ( args[0].equals("search") )
             {
 
-                HashMap<String, IntArray> qGramIndex;
+                TemplateMetaData templateMetaData;
                 templateIndexFileName = args[1];
                 patternFileName = args[2];
 
@@ -75,7 +107,8 @@ public class Uebung3
 
                 try
                 {
-                    qGramIndex = (HashMap<String, IntArray>) new ObjectInputStream(new FileInputStream(templateIndexFileName)).readObject();
+                    templateMetaData = (TemplateMetaData) new ObjectInputStream(
+                            new FileInputStream(templateIndexFileName)).readObject();
                     patterns = new FASTAReader(patternFileName).getFastaSequences();
                 }
                 catch ( IOException e )
@@ -89,9 +122,10 @@ public class Uebung3
                     return;
                 }
 
-                for (FASTASequence pattern: patterns)
+                for ( FASTASequence pattern : patterns )
                 {
-                    new QGramSearch(qGramIndex, pattern.sequence, pattern.sequenceLength, q);
+                    new QGramSearch(templateMetaData.qGramIndex, pattern.sequence, pattern.sequenceLength, q,
+                                    templateMetaData.templateLength, templateMetaData.tFreq);
                 }
             }
             else

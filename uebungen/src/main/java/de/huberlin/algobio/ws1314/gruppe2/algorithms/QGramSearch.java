@@ -9,10 +9,14 @@ import java.util.HashMap;
 
 public class QGramSearch
 {
-    public QGramSearch( HashMap<String, IntArray> qGramIndex, byte[] p, int p_len, int q )
+    public QGramSearch( HashMap<String, IntArray> qGramIndex, byte[] p, int p_len, int q, int t_len,
+                        HashMap<String, Integer> tFreq )
     {
-        if (q > p_len)
+        if ( q > p_len )
             throw new IllegalArgumentException("Pattern is too short for index with q=" + q);
+
+        Tools.tFreq = tFreq;
+        double expectedHits = Tools.calcExpectation(p, p_len);
 
         ArrayList<Integer> results;
 
@@ -85,10 +89,18 @@ public class QGramSearch
 
         }
 
-        System.out.println("Found matches: " + results.size() + " for pattern: " + Tools.byteArrayToString(p, p_len));
-        for ( int i = 0; i < Math.min(results.size(), 10); ++i )
+        int ftp_len = Math.min(10, results.size());
+        int[] firstTenPositions = new int[ftp_len];
+        for ( int i = 0; i < ftp_len; ++i )
         {
-//            System.out.println("index=" + results.get(i));
+            firstTenPositions[i] = results.get(i);
         }
+
+        System.out.println("> " + Tools.byteArrayToString(p, p_len));
+        System.out.println(">> Length: " + p_len);
+        System.out.println(">> Occurrences: " + results.size());
+        System.out.println(">> Expected: " + String.format("%f", expectedHits));
+        System.out.println(">> Positions: " + Tools.printPositions(firstTenPositions));
+        System.out.println();
     }
 }

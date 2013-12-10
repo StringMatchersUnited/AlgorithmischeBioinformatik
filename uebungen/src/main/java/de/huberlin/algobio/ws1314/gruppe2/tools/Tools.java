@@ -59,9 +59,8 @@ public class Tools
         return frequencies;
     }
 
-    public static double calcExpectation( byte[] pattern, int patternLength, byte[] template, int templateLength )
+    public static double calcExpectation( byte[] pattern, int patternLength )
     {
-//        HashMap<String, Integer> tFreq = getFrequencies(template, templateLength);
         double tall = tFreq.get("all");
         double ta = tFreq.get("a") / tall;
         double tc = tFreq.get("c") / tall;
@@ -77,5 +76,17 @@ public class Tools
                Math.pow(tn, pFreq.get("n")) *
                Math.pow(tt, pFreq.get("t")) *
                tall;
+    }
+
+    public static String printPositions(int[] positions)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(positions[0]);
+        for (int i=1; i<positions.length; ++i)
+        {
+            sb.append(", ").append(positions[i]);
+        }
+
+        return sb.toString();
     }
 }

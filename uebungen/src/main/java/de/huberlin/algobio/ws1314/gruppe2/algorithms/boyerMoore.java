@@ -11,7 +11,7 @@ public class boyerMoore
     	int hits = 0;
     	int comp = 0;		              // vergleiche
     	int[] firstTenHits = new int[10]; // ersten 10 als Liste?
-        double expectedHits = Tools.calcExpectation(pattern, patternLength, template, templateLength);
+        double expectedHits = Tools.calcExpectation(pattern, patternLength);
 
     	for (int i = patternLength - 1, j; i < templateLength;) {
     		for (j = patternLength - 1; pattern[j] == template[i]; --i, --j) {
@@ -31,21 +31,8 @@ public class boyerMoore
     	System.out.println(">> Occurrences: " + hits);
     	System.out.println(">> Expected: " + String.format("%f", expectedHits));  // erwartungswert aus count
     	System.out.println(">> Char-Comparisons: " + comp);
-    	System.out.println(">> Positions: " + printPositions(firstTenHits)); // ersten 10 Positionen
+    	System.out.println(">> Positions: " + Tools.printPositions(firstTenHits)); // ersten 10 Positionen
     }
-
-    private String printPositions(int[] positions)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(positions[0]);
-        for (int i=1; i<positions.length; ++i)
-        {
-            sb.append(", ").append(positions[i]);
-        }
-
-        return sb.toString();
-    }
-
 
     // "bad character matching"
     private int[] getSkipTable (byte[] pattern, int patternLength) {
