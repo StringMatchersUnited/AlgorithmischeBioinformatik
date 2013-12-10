@@ -9,11 +9,14 @@ import java.util.HashMap;
 
 public class QGramSearch
 {
-    public QGramSearch( HashMap<String, IntArray> qGramIndex, byte[] p, int p_len )
+    public QGramSearch( HashMap<String, IntArray> qGramIndex, byte[] p, int p_len, int q )
     {
+        if (q > p_len)
+            throw new IllegalArgumentException("Pattern is too short for index with q=" + q);
+
         ArrayList<Integer> results;
 
-        String qGram = new String(Arrays.copyOfRange(p, 0, 3));
+        String qGram = new String(Arrays.copyOfRange(p, 0, q));
 
         if ( !qGramIndex.containsKey(qGram) )
         {
@@ -24,10 +27,9 @@ public class QGramSearch
         // all indexes for the first qGram are potential results
         results = qGramIndex.get(qGram).toArrayList();
 
-        for ( int i = 3; i < p_len - 2; i += 3 )
+        for ( int i = q; i < p_len - ( q - 1 ); i += q )
         {
-            System.out.println("i=" + i);
-            qGram = new String(Arrays.copyOfRange(p, i, i + 3));
+            qGram = new String(Arrays.copyOfRange(p, i, i + q));
 
             if ( !qGramIndex.containsKey(qGram) )
             {
@@ -38,11 +40,8 @@ public class QGramSearch
             ArrayList<Integer> tmpResults = new ArrayList<Integer>();
             for ( int index : results )
             {
-                // TODO: Problem is here! The contains method steps through all elements. We should use some kind of
-                // TODO: bin-search instead. Don't know how to get this done with low effort.
                 if ( qGramIndex.get(qGram).contains(index + i) )
                 {
-//                    System.out.println("index=" + index);
                     tmpResults.add(index);
                 }
             }
@@ -50,14 +49,46 @@ public class QGramSearch
 
             if ( results.isEmpty() )
             {
-                System.out.println("Found no matches: " + results.size() + " for pattern: " + Tools.byteArrayToString(p, p_len));
+                System.out.println(
+                        "Found no matches: " + results.size() + " for pattern: " + Tools.byteArrayToString(p, p_len));
                 return;
             }
         }
-        System.out.println("Found matches: " + results.size() + " for pattern: " + Tools.byteArrayToString(p, p_len));
-        for ( int matchIndex : results )
+
+        // last step if p_len modulo q not zero
+        if ( p_len % q != 0 )
         {
-            System.out.println("index=" + matchIndex);
+            qGram = new String(Arrays.copyOfRange(p, p_len - q, p_len));
+
+            if ( !qGramIndex.containsKey(qGram) )
+            {
+                System.out.println("Pattern qGram not found in qGram index. Stopping the whole search, sorry bro!");
+                return;
+            }
+
+            ArrayList<Integer> tmpResults = new ArrayList<Integer>();
+            for ( int index : results )
+            {
+                if ( qGramIndex.get(qGram).contains(index + p_len - q) )
+                {
+                    tmpResults.add(index);
+                }
+            }
+            results = tmpResults;
+
+            if ( results.isEmpty() )
+            {
+                System.out.println(
+                        "Found no matches: " + results.size() + " for pattern: " + Tools.byteArrayToString(p, p_len));
+                return;
+            }
+
+        }
+
+        System.out.println("Found matches: " + results.size() + " for pattern: " + Tools.byteArrayToString(p, p_len));
+        for ( int i = 0; i < Math.min(results.size(), 10); ++i )
+        {
+//            System.out.println("index=" + results.get(i));
         }
     }
 }

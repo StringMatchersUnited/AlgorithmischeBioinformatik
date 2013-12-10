@@ -25,6 +25,8 @@ public class Uebung3
         String templateIndexFileName;
         String patternFileName;
 
+        int q = 6;
+
         if ( args.length == 3 )
         {
             if ( args[0].equals("index") )
@@ -49,7 +51,7 @@ public class Uebung3
                     return;
                 }
 
-                new QGramIndex(3, template.sequence, template.sequenceLength, templateIndexFileName);
+                new QGramIndex(q, template.sequence, template.sequenceLength, templateIndexFileName);
 
             }
             else if ( args[0].equals("search") )
@@ -89,7 +91,7 @@ public class Uebung3
 
                 for (FASTASequence pattern: patterns)
                 {
-                    new QGramSearch(qGramIndex, pattern.sequence, pattern.sequenceLength);
+                    new QGramSearch(qGramIndex, pattern.sequence, pattern.sequenceLength, q);
                 }
             }
             else

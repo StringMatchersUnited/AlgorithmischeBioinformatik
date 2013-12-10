@@ -55,12 +55,20 @@ public class IntArray implements Serializable
 
     public boolean contains( int elem )
     {
-        for ( int i = 0; i < size(); ++i )
+        int imax = size();
+        int imin = 0;
+
+        while ( imax >= imin )
         {
-            if ( elem == get(i) )
-            {
+            int imid = imin + ( ( imax - imin ) / 2 );
+
+            int e = get(imid);
+            if ( e == elem )
                 return true;
-            }
+            else if ( elem > e )
+                imin = imid + 1;
+            else
+                imax = imid - 1;
         }
 
         return false;
