@@ -38,6 +38,8 @@ public class QGramSearch
             ArrayList<Integer> tmpResults = new ArrayList<Integer>();
             for ( int index : results )
             {
+                // TODO: Problem is here! The contains method steps through all elements. We should use some kind of
+                // TODO: bin-search instead. Don't know how to get this done with low effort.
                 if ( qGramIndex.get(qGram).contains(index + i) )
                 {
 //                    System.out.println("index=" + index);
