@@ -27,6 +27,7 @@ public class IntArray implements Serializable
     {
         int arrIndex = position / capacity;
         int posIndex = position % capacity;
+
         if ( arrIndex >= arr.size() )
         {
             arr.add(new int[capacity]);
@@ -50,5 +51,28 @@ public class IntArray implements Serializable
     public int size()
     {
         return position;
+    }
+
+    public boolean contains( int elem )
+    {
+        for ( int i = 0; i < size(); ++i )
+        {
+            if ( elem == get(i) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public ArrayList<Integer> toArrayList()
+    {
+        ArrayList<Integer> arrList = new ArrayList<Integer>();
+        for ( int i = 0; i < size(); ++i )
+        {
+            arrList.add(get(i));
+        }
+        return arrList;
     }
 }

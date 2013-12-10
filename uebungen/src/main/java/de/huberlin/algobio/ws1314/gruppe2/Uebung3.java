@@ -1,14 +1,18 @@
 package de.huberlin.algobio.ws1314.gruppe2;
 
-import de.huberlin.algobio.ws1314.gruppe2.algorithms.Index;
+import de.huberlin.algobio.ws1314.gruppe2.algorithms.QGramIndex;
+import de.huberlin.algobio.ws1314.gruppe2.algorithms.QGramSearch;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
-import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
+import de.huberlin.algobio.ws1314.gruppe2.tools.IntArray;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Uebung3
 {
@@ -45,14 +49,13 @@ public class Uebung3
                     return;
                 }
 
-                Tools.tFreq = Tools.getFrequencies(template.sequence, template.sequenceLength);
-
-                new Index(2, template.sequence, template.sequenceLength, templateIndexFileName);
+                new QGramIndex(3, template.sequence, template.sequenceLength, templateIndexFileName);
 
             }
             else if ( args[0].equals("search") )
             {
 
+                HashMap<String, IntArray> qGramIndex;
                 templateIndexFileName = args[1];
                 patternFileName = args[2];
 
@@ -68,25 +71,26 @@ public class Uebung3
                     return;
                 }
 
-//	        	try
-//	        	{
-//	        		template = new FASTAReader(templateFileName).getFastaSequence(0);
-//	        	}
-//	        	catch ( IOException e )
-//	        	{
-//	        		System.out.println("IO Exception: Something went wrong while trying to open the specified files.");
-//	        		return;
-//	        	}
-//	        	
-//	        	Tools.tFreq = Tools.getFrequencies(template.sequence, template.sequenceLength);
-//	        	
-//	        	for ( FASTASequence pattern : patterns )
-//	        	{
-//	        		new boyerMoore(pattern.sequence, pattern.sequenceLength, template.sequence,
-//	        				template.sequenceLength);
-//	        		System.out.println();
-//	        	}
+                try
+                {
+                    qGramIndex = (HashMap<String, IntArray>) new ObjectInputStream(new FileInputStream(templateIndexFileName)).readObject();
+                    patterns = new FASTAReader(patternFileName).getFastaSequences();
+                }
+                catch ( IOException e )
+                {
+                    System.out.println("IO Exception: Something went wrong while trying to open the specified files.");
+                    return;
+                }
+                catch ( ClassNotFoundException e )
+                {
+                    System.out.println("Index could not be read into memory.");
+                    return;
+                }
 
+                for (FASTASequence pattern: patterns)
+                {
+                    new QGramSearch(qGramIndex, pattern.sequence, pattern.sequenceLength);
+                }
             }
             else
             {
