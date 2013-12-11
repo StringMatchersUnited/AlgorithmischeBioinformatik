@@ -6,20 +6,20 @@ import java.util.ArrayList;
 
 public class IntArray implements Serializable
 {
-    ArrayList<int[]> arr      = new ArrayList<int[]>();
-    Integer          capacity = 1000;
-    Integer          position = 0;
+    ArrayList<int[]> arr = new ArrayList<int[]>();
+    Integer capacity = 1000;
+    Integer position = 0;
 
 
     public IntArray()
     {
-        arr.add(new int[capacity]);
+        arr.add( new int[capacity] );
     }
 
     public IntArray( int capacity )
     {
         this.capacity = capacity;
-        arr.add(new int[capacity]);
+        arr.add( new int[capacity] );
     }
 
 
@@ -30,10 +30,10 @@ public class IntArray implements Serializable
 
         if ( arrIndex >= arr.size() )
         {
-            arr.add(new int[capacity]);
+            arr.add( new int[capacity] );
         }
 
-        arr.get(arrIndex)[posIndex] = i;
+        arr.get( arrIndex )[posIndex] = i;
         ++position;
     }
 
@@ -45,7 +45,7 @@ public class IntArray implements Serializable
         if ( arrIndex >= arr.size() )
             return null;
 
-        return arr.get(arrIndex)[posIndex];
+        return arr.get( arrIndex )[posIndex];
     }
 
     public int size()
@@ -62,7 +62,7 @@ public class IntArray implements Serializable
         {
             int imid = imin + ( ( imax - imin ) / 2 );
 
-            int e = get(imid);
+            int e = get( imid );
             if ( e == elem )
                 return true;
             else if ( elem > e )
@@ -79,7 +79,7 @@ public class IntArray implements Serializable
         ArrayList<Integer> arrList = new ArrayList<Integer>();
         for ( int i = 0; i < size(); ++i )
         {
-            arrList.add(get(i));
+            arrList.add( get( i ) );
         }
         return arrList;
     }

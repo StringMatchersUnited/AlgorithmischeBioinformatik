@@ -13,20 +13,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 class TemplateMetaData implements Serializable
 {
-    public Integer                   templateLength;
-    public HashMap<String, Integer>  tFreq;
+    public HashMap<String, Integer> tFreq;
     public HashMap<String, IntArray> qGramIndex;
 
-    public TemplateMetaData( HashMap<String, IntArray> qGramIndex, Integer templateLength,
-                             HashMap<String, Integer> tFreq )
+    public TemplateMetaData( HashMap<String, IntArray> qGramIndex, HashMap<String, Integer> tFreq )
     {
         this.qGramIndex = qGramIndex;
-        this.templateLength = templateLength;
         this.tFreq = tFreq;
     }
 }
+
 
 public class Uebung3
 {
@@ -44,99 +43,89 @@ public class Uebung3
 
         if ( args.length == 3 )
         {
-            if ( args[0].equals("index") )
+            if ( args[0].equals( "index" ) )
             {
 
                 templateFileName = args[1];
                 templateIndexFileName = args[2];
 
-                if ( !Files.exists(Paths.get(templateFileName)) )
+                if ( !Files.exists( Paths.get( templateFileName ) ) )
                 {
-                    System.out.println("Template file does not exists.");
+                    System.out.println( "Template file does not exists." );
                     return;
                 }
 
                 try
                 {
-                    template = new FASTAReader(templateFileName).getFastaSequence(0);
-                }
-                catch ( IOException e )
+                    template = new FASTAReader( templateFileName ).getFastaSequence( 0 );
+                } catch ( IOException e )
                 {
-                    System.out.println("IO Exception: Something went wrong while trying to open the specified files.");
+                    System.out.println( "IO Exception: Something went wrong while trying to open the specified files." );
                     return;
                 }
 
                 // get template character frequencies once
-                Tools.tFreq = Tools.getFrequencies(template.sequence, template.sequenceLength);
+                Tools.tFreq = Tools.getFrequencies( template.sequence );
 
-                QGramIndex qGramIndex = new QGramIndex(q, template.sequence, template.sequenceLength,
-                                                       templateIndexFileName);
+                QGramIndex qGramIndex = new QGramIndex( q, template.sequence, templateIndexFileName );
 
-                TemplateMetaData templateMetaData = new TemplateMetaData(qGramIndex.getQgramIndex(),
-                                                                         template.sequenceLength, Tools.tFreq);
+                TemplateMetaData templateMetaData = new TemplateMetaData( qGramIndex.getQgramIndex(), Tools.tFreq );
 
                 try
                 {
-                    ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream(templateIndexFileName));
-                    oo.writeObject(templateMetaData);
-                }
-                catch ( IOException e )
+                    ObjectOutputStream oo = new ObjectOutputStream( new FileOutputStream( templateIndexFileName ) );
+                    oo.writeObject( templateMetaData );
+                } catch ( IOException e )
                 {
                     e.printStackTrace();
                 }
 
-            }
-            else if ( args[0].equals("search") )
+            } else if ( args[0].equals( "search" ) )
             {
 
                 TemplateMetaData templateMetaData;
                 templateIndexFileName = args[1];
                 patternFileName = args[2];
 
-                if ( !Files.exists(Paths.get(templateIndexFileName)) )
+                if ( !Files.exists( Paths.get( templateIndexFileName ) ) )
                 {
-                    System.out.println("Index file does not exists.");
+                    System.out.println( "Index file does not exists." );
                     return;
                 }
 
-                if ( !Files.exists(Paths.get(patternFileName)) )
+                if ( !Files.exists( Paths.get( patternFileName ) ) )
                 {
-                    System.out.println("Pattern file does not exists.");
+                    System.out.println( "Pattern file does not exists." );
                     return;
                 }
 
                 try
                 {
                     templateMetaData = (TemplateMetaData) new ObjectInputStream(
-                            new FileInputStream(templateIndexFileName)).readObject();
-                    patterns = new FASTAReader(patternFileName).getFastaSequences();
-                }
-                catch ( IOException e )
+                            new FileInputStream( templateIndexFileName ) ).readObject();
+                    patterns = new FASTAReader( patternFileName ).getFastaSequences();
+                } catch ( IOException e )
                 {
-                    System.out.println("IO Exception: Something went wrong while trying to open the specified files.");
+                    System.out.println( "IO Exception: Something went wrong while trying to open the specified files." );
                     return;
-                }
-                catch ( ClassNotFoundException e )
+                } catch ( ClassNotFoundException e )
                 {
-                    System.out.println("Index could not be read into memory.");
+                    System.out.println( "Index could not be read into memory." );
                     return;
                 }
 
                 for ( FASTASequence pattern : patterns )
                 {
-                    new QGramSearch(templateMetaData.qGramIndex, pattern.sequence, pattern.sequenceLength, q,
-                                    templateMetaData.templateLength, templateMetaData.tFreq);
+                    new QGramSearch( templateMetaData.qGramIndex, pattern.sequence, q, templateMetaData.tFreq );
                 }
-            }
-            else
+            } else
             {
-                System.out.println("Wrong arguments");
+                System.out.println( "Wrong arguments" );
                 return;
             }
-        }
-        else
+        } else
         {
-            System.out.println("Too less arguments");
+            System.out.println( "Too less arguments" );
             return;
         }
     }

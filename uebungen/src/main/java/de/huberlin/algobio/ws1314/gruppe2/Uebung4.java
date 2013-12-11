@@ -13,28 +13,28 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class Uebung4
 {
     public static void main( String[] args )
     {
-    	FASTASequence template;
-    	
-    	String templateFileName;
-    	
-    	templateFileName = args[0];
-    	
-    	try
+        FASTASequence template;
+
+        String templateFileName;
+
+        templateFileName = args[0];
+
+        try
         {
-            template = new FASTAReader(templateFileName).getFastaSequence(0);
-        }
-        catch ( IOException e )
+            template = new FASTAReader( templateFileName ).getFastaSequence( 0 );
+        } catch ( IOException e )
         {
-            System.out.println("IO Exception: Something went wrong while trying to open the specified files.");
+            System.out.println( "IO Exception: Something went wrong while trying to open the specified files." );
             return;
         }
-    	
-    	Tools.tFreq = Tools.getFrequencies(template.sequence, template.sequenceLength);
-    	
-		new SuffixArray(template.sequence, template.sequenceLength);
+
+        Tools.tFreq = Tools.getFrequencies( template.sequence );
+
+        new SuffixArray( template.sequence );
     }
 }

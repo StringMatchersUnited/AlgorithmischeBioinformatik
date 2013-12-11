@@ -6,7 +6,7 @@ public class NaiveMatching
 
     public NaiveMatching( byte[] pattern, byte[] template )
     {
-        match(pattern, template);
+        match( pattern, template );
     }
 
 
@@ -28,6 +28,6 @@ public class NaiveMatching
                 ++matchCount;
             }
         }
-        System.out.println("Found " + matchCount + " matches.");
+        System.out.println( "Found " + matchCount + " matches." );
     }
 }
