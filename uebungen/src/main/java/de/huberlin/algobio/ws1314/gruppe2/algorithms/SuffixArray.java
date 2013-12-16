@@ -43,10 +43,13 @@ public class SuffixArray
         initialSort();
         
         curPos = 1;
-        while ((pointer.size() + 1) != suffix.size()) {
+//        while ((pointer.size() + 1) != suffix.size()) {
+        	System.out.println(pointer.size());
+//        	sysoSL();
+//        	sysoPL();
         	sort(curPos);
         	curPos = curPos * 2;
-        }
+//        }
         
 //		sysoSL();
 //    	sysoPL();
@@ -86,65 +89,72 @@ public class SuffixArray
     }
     
     private void sort(Integer nextPos) {
-    	int indexOfBucket;
-    	int indexToMove;
-    	int counter;
-    	int offset;
-    	List<Integer> pointerInBucket = new ArrayList<Integer>();
-//    	List<Integer> newPointer = new ArrayList<Integer>();
     	
-    	for (int i = 0; i < pointer.size(); i++) {
-    		pointerInBucket.add(pointer.get(i));
-//    		newPointer.add(pointer.get(i));
+    	for (int i = 0; i < sLength; i++) {
+    		
     	}
     	
     	
-    	for ( int i = 0; i < sLength; i++ )
-        {
-//            System.out.println("suffix.get(i)" + suffix.get(i) + ".." + (suffix.get(i) - 1));
-            indexOfBucket = getBucketIndex((suffix.get(i) - nextPos));
-            indexToMove = getSuffixIndex((suffix.get(i) - nextPos), indexOfBucket);
-            // umsortieren
-            if ((indexToMove > -1) && (indexOfBucket > -1)) {
-            	if (indexToMove != pointerInBucket.get(indexOfBucket)) {
-            		suffix.add(pointerInBucket.get(indexOfBucket), suffix.get(indexToMove));
-            		suffix.remove(indexToMove + 1);
-            	}
-            	pointerInBucket.set(indexOfBucket, (pointerInBucket.get(indexOfBucket) + 1));
-            }
-        }
     	
-//    	sysoSL();
-//    	sysoPL();
-    	
-    	// pointer erweitern
-    	// von hinten nach vorn
-    	// für den letzten
-    	counter = 1;
-		while (pointer.get(pointer.size() - 1) + counter < sLength) {
-			if (isDifferent((pointer.get(pointer.size() - 1)), (pointer.get(pointer.size() - 1) + counter), nextPos)) {
-				pointer.add(pointer.size(), (pointer.get(pointer.size() - 1) + counter));
-			} else {
-				counter++;
-			}
-		}
-		
-		// 
-    	for (int i = pointer.size() - 2; i > - 1; i--) {
-    		if (pointer.get(i + 1) - pointer.get(i) == 1) break;
-    		counter = 1;
-    		offset = 0;
-    		while (pointer.get(i + offset) + counter < pointer.get(i + 1 + offset)) {
-    			// vergleich
-    			if (isDifferent((pointer.get(i + offset)), (pointer.get(i + offset) + counter), nextPos)) {
-    				offset++;
-//    				System.out.println(pointer.get(i + offset) + counter);
-    				pointer.add(i + offset, (pointer.get(i + offset - 1) + counter));
-    			} else {
-    				counter++;
-    			}
-    		}
-    	}
+//    	int indexOfBucket;
+//    	int indexToMove;
+//    	int counter;
+//    	int offset;
+//    	List<Integer> pointerInBucket = new ArrayList<Integer>();
+////    	List<Integer> newPointer = new ArrayList<Integer>();
+//    	
+//    	for (int i = 0; i < pointer.size(); i++) {
+//    		pointerInBucket.add(pointer.get(i));
+////    		newPointer.add(pointer.get(i));
+//    	}
+//    	
+//    	
+//    	for ( int i = 0; i < sLength; i++ )
+//        {
+////            System.out.println("suffix.get(i)" + suffix.get(i) + ".." + (suffix.get(i) - 1));
+//            indexOfBucket = getBucketIndex((suffix.get(i) - nextPos));
+//            indexToMove = getSuffixIndex((suffix.get(i) - nextPos), indexOfBucket);
+//            // umsortieren
+//            if ((indexToMove > -1) && (indexOfBucket > -1)) {
+//            	if (indexToMove != pointerInBucket.get(indexOfBucket)) {
+//            		suffix.add(pointerInBucket.get(indexOfBucket), suffix.get(indexToMove));
+//            		suffix.remove(indexToMove + 1);
+//            	}
+//            	pointerInBucket.set(indexOfBucket, (pointerInBucket.get(indexOfBucket) + 1));
+//            }
+//        }
+//    	
+////    	sysoSL();
+////    	sysoPL();
+//    	
+//    	// pointer erweitern
+//    	// von hinten nach vorn
+//    	// für den letzten
+//    	counter = 1;
+//		while (pointer.get(pointer.size() - 1) + counter < sLength) {
+//			if (isDifferent((pointer.get(pointer.size() - 1)), (pointer.get(pointer.size() - 1) + counter), nextPos)) {
+//				pointer.add(pointer.size(), (pointer.get(pointer.size() - 1) + counter));
+//			} else {
+//				counter++;
+//			}
+//		}
+//		
+//		// 
+//    	for (int i = pointer.size() - 2; i > - 1; i--) {
+//    		if (pointer.get(i + 1) - pointer.get(i) == 1) continue;
+//    		counter = 1;
+//    		offset = 0;
+//    		while (pointer.get(i + offset) + counter < pointer.get(i + 1 + offset)) {
+//    			// vergleich
+//    			if (isDifferent((pointer.get(i + offset)), (pointer.get(i + offset) + counter), nextPos)) {
+//    				offset++;
+////    				System.out.println(pointer.get(i + offset) + counter);
+//    				pointer.add(i + offset, (pointer.get(i + offset - 1) + counter));
+//    			} else {
+//    				counter++;
+//    			}
+//    		}
+//    	}
     	
 //    	sysoSL();
 //    	sysoPL();
