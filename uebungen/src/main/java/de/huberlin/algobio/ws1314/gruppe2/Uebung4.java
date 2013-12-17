@@ -19,14 +19,18 @@ public class Uebung4
     public static void main( String[] args )
     {
         FASTASequence template;
+        ArrayList<FASTASequence> patterns;
 
         String templateFileName;
+        String patternFileName;
 
         templateFileName = args[0];
-
+        patternFileName = args[1];
+        
         try
         {
-            template = new FASTAReader( templateFileName ).getFastaSequence( 0 );
+        	template = new FASTAReader( templateFileName ).getFastaSequence( 0 );
+            patterns = new FASTAReader( patternFileName ).getFastaSequences();
         } catch ( IOException e )
         {
             System.out.println( "IO Exception: Something went wrong while trying to open the specified files." );
@@ -34,7 +38,12 @@ public class Uebung4
         }
 
         Tools.tFreq = Tools.getFrequencies( template.sequence );
-
-        new SuffixArray( template.sequence );
+        
+        SuffixArray sA = new SuffixArray( template.sequence );
+        
+        for ( FASTASequence pattern : patterns )
+        {
+            sA.search(pattern.sequence);
+        }
     }
 }
