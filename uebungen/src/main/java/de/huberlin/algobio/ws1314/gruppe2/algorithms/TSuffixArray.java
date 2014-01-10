@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 
-
-public class SuffixArray
+public class TSuffixArray
 {
-//    private int[] suffix;
-	private int[] aSuffix;
-	private LinkedList<Integer> lBuckets;
+	private int[] aSortedSuffix;
+	private int[] aSuffixInBucket;
+	private LinkedList<int[]> lBuckets; 
 	
     private List<Integer> suffix;
     private List<Integer> pointer;
@@ -18,7 +17,7 @@ public class SuffixArray
     private int sLength;
     private final int sizeOfAlph = 256;
 
-    public SuffixArray( byte[] pTemplate )
+    public TSuffixArray( byte[] pTemplate )
     {
     	Integer curPos = 0;
     	
@@ -28,50 +27,21 @@ public class SuffixArray
         suffix = new ArrayList<Integer>();
         pointer = new ArrayList<Integer>();
         
-        aSuffix = new int[sLength];
-        lBuckets = new LinkedList<Integer>();
+        aSortedSuffix = new int[sLength];
+        aSuffixInBucket = new int[sLength];
+        lBuckets = new LinkedList<int[]>();
         
-        System.out.println( tLength );
-//        suffix = new int[tLength + 1]; // leere Suffix "$"
-        clearSuffixList();
-        for ( int i = 1; i < sLength; i++ )
-        {
-            suffix.add(i - 1);
-        }
-        
-        aSuffix[0] = tLength;
+        aSortedSuffix[0] = tLength;
         for (int i = 1; i < sLength; i++) {
-        	aSuffix[i] = i - 1;
+        	aSortedSuffix[i] = i - 1;
         }
         
-        lBuckets.add(1);
-        
-//        sysoSL();
-        
-//        for (int i = 1; i < suffix.size(); i++) {
-//        	System.out.println(i + "--" + suffix.get(i) + "--" + pTemplate[suffix.get(i)] );
-//        	
-//        }
-
-//        suffixArraySort();
-        initialSort();
-        
-        curPos = 1;
-//        while ((pointer.size() + 1) != suffix.size()) {
-        	System.out.println(pointer.size());
-//        	sysoSL();
-//        	sysoPL();
-        	sort(curPos);
-        	curPos = curPos * 2;
-//        }
-        
-//		sysoSL();
-//    	sysoPL();
+        sort();
     }
     
     private void sort() {
     	List<List<Integer>> buckets = new ArrayList<List<Integer>>();
-    	int suffixIndex = 1; // leeres Zeichen ganz vorn, fällt weg
+    	int suffixIndex = 1;
     	
     	for ( int i = 0; i < sizeOfAlph; i++ )
     	{
@@ -80,123 +50,110 @@ public class SuffixArray
     	
     	for ( int i = 0; i < tLength; i++ )
         {
-            buckets.get( template[i] ).add( suffix[i + 1] );
+            buckets.get( template[i] ).add( aSortedSuffix[i + 1] );
         }
     	
+    	int bucket = 0;
     	for (int i = 0; i < buckets.size(); i++) {
-    		for (int j = 0; j < buckets.get(i).size(); j++) {
-    			suffix.add(buckets.get(i).get(j));
-    		}
     		if (buckets.get(i).size() > 0) {
-    			pointer.add(suffixIndex);
-    			suffixIndex = suffixIndex + buckets.get(i).size();
-    		}
-    	}
-    }
-    
-    private void initialSort() {
-    	List<List<Integer>> buckets = new ArrayList<List<Integer>>();
-    	int suffixIndex = 1; // leeres Zeichen ganz vorn, fällt weg
-    	
-    	for ( int i = 0; i < sizeOfAlph; i++ )
-    	{
-    		buckets.add( new ArrayList<Integer>() );
-    	}
-    	
-    	for ( int i = 0; i < tLength; i++ )
-        { // leeres Suffix "$" bleibt ganz vorn | + 1 weil er das letzte Zeichen vergisst? (falsche tLength)
-            buckets.get( template[i] ).add( suffix.get(i + 1) );
-        }
-    	
-    	// suffix-liste neu machen
-    	clearSuffixList();
-    	
-    	// Auf das suffix-Array zeigen
-    	for (int i = 0; i < buckets.size(); i++) {
-    		for (int j = 0; j < buckets.get(i).size(); j++) {
-//    			System.out.println( buckets.get(i).get(j) + ".." + i + ".." + j);
-    			suffix.add(buckets.get(i).get(j));
-    		}
-    		if (buckets.get(i).size() > 0) {
-    			pointer.add(suffixIndex);
-    			suffixIndex = suffixIndex + buckets.get(i).size();
+    			lBuckets.add(new int[] {suffixIndex, 0});
+    			bucket++;
+	    		for (int j = 0; j < buckets.get(i).size(); j++) {
+	    			aSortedSuffix[suffixIndex] = buckets.get(i).get(j);
+	    			aSuffixInBucket[buckets.get(i).get(j)] = bucket;
+	    			suffixIndex++;
+	    		}
     		}
     	}
     	
-//    	sysoSL();
-//    	sysoPL();
+    	System.out.println("initialSort done");
+    	
+    	for (int i = 0; i < lBuckets.size(); i++) {
+    		System.out.println(lBuckets.get(i)[0] + "." + lBuckets.get(i)[1]);
+    		System.out.println(aSuffixInBucket[i]);
+    	}
+    	
+    	// rest-sort
+    	
+    	int nPos = 1;
+    	int[] aSortedSuffix2 = new int[sLength]; // hilfsarray
+    	int cnt = 0;
+    	int[] aRef;
+    	int[] aSorted;
+    	while (lBuckets.size() < tLength) {
+    		cnt++;
+    		nPos = nPos * 2;
+    		
+//    		System.out.println("nextPos: " + nPos);
+    		if (cnt % 2 == 0) {
+    			aRef = aSortedSuffix2;
+    			aSorted = aSortedSuffix;
+    		} else {
+    			aRef = aSortedSuffix;
+    			aSorted = aSortedSuffix2;
+    		}
+//    		System.out.println("aRef: " + aRef);
+//    		System.out.println("aSorted: " + aSorted);
+    		
+    		for (int i = 0; i < sLength; i++) {
+    			
+    		}
+    	
+    	// bucketPointer zurücksetzen
+    	}
     }
     
     private void sort(Integer nextPos) {
+    	int indexOfBucket;
+    	int indexToMove;
+    	int counter;
+    	int offset;
+    	List<Integer> pointerInBucket = new ArrayList<Integer>();
     	
-    	for (int i = 0; i < sLength; i++) {
-    		
+    	for (int i = 0; i < pointer.size(); i++) {
+    		pointerInBucket.add(pointer.get(i));
     	}
     	
     	
+    	for ( int i = 0; i < sLength; i++ )
+        {
+            indexOfBucket = getBucketIndex((suffix.get(i) - nextPos));
+            indexToMove = getSuffixIndex((suffix.get(i) - nextPos), indexOfBucket);
+            // umsortieren
+            if ((indexToMove > -1) && (indexOfBucket > -1)) {
+            	if (indexToMove != pointerInBucket.get(indexOfBucket)) {
+            		suffix.add(pointerInBucket.get(indexOfBucket), suffix.get(indexToMove));
+            		suffix.remove(indexToMove + 1);
+            	}
+            	pointerInBucket.set(indexOfBucket, (pointerInBucket.get(indexOfBucket) + 1));
+            }
+        }
     	
-//    	int indexOfBucket;
-//    	int indexToMove;
-//    	int counter;
-//    	int offset;
-//    	List<Integer> pointerInBucket = new ArrayList<Integer>();
-////    	List<Integer> newPointer = new ArrayList<Integer>();
-//    	
-//    	for (int i = 0; i < pointer.size(); i++) {
-//    		pointerInBucket.add(pointer.get(i));
-////    		newPointer.add(pointer.get(i));
-//    	}
-//    	
-//    	
-//    	for ( int i = 0; i < sLength; i++ )
-//        {
-////            System.out.println("suffix.get(i)" + suffix.get(i) + ".." + (suffix.get(i) - 1));
-//            indexOfBucket = getBucketIndex((suffix.get(i) - nextPos));
-//            indexToMove = getSuffixIndex((suffix.get(i) - nextPos), indexOfBucket);
-//            // umsortieren
-//            if ((indexToMove > -1) && (indexOfBucket > -1)) {
-//            	if (indexToMove != pointerInBucket.get(indexOfBucket)) {
-//            		suffix.add(pointerInBucket.get(indexOfBucket), suffix.get(indexToMove));
-//            		suffix.remove(indexToMove + 1);
-//            	}
-//            	pointerInBucket.set(indexOfBucket, (pointerInBucket.get(indexOfBucket) + 1));
-//            }
-//        }
-//    	
-////    	sysoSL();
-////    	sysoPL();
-//    	
-//    	// pointer erweitern
-//    	// von hinten nach vorn
-//    	// für den letzten
-//    	counter = 1;
-//		while (pointer.get(pointer.size() - 1) + counter < sLength) {
-//			if (isDifferent((pointer.get(pointer.size() - 1)), (pointer.get(pointer.size() - 1) + counter), nextPos)) {
-//				pointer.add(pointer.size(), (pointer.get(pointer.size() - 1) + counter));
-//			} else {
-//				counter++;
-//			}
-//		}
-//		
-//		// 
-//    	for (int i = pointer.size() - 2; i > - 1; i--) {
-//    		if (pointer.get(i + 1) - pointer.get(i) == 1) continue;
-//    		counter = 1;
-//    		offset = 0;
-//    		while (pointer.get(i + offset) + counter < pointer.get(i + 1 + offset)) {
-//    			// vergleich
-//    			if (isDifferent((pointer.get(i + offset)), (pointer.get(i + offset) + counter), nextPos)) {
-//    				offset++;
-////    				System.out.println(pointer.get(i + offset) + counter);
-//    				pointer.add(i + offset, (pointer.get(i + offset - 1) + counter));
-//    			} else {
-//    				counter++;
-//    			}
-//    		}
-//    	}
-    	
-//    	sysoSL();
-//    	sysoPL();
+    	// pointer erweitern
+    	// von hinten nach vorn
+    	// für den letzten
+    	counter = 1;
+		while (pointer.get(pointer.size() - 1) + counter < sLength) {
+			if (isDifferent((pointer.get(pointer.size() - 1)), (pointer.get(pointer.size() - 1) + counter), nextPos)) {
+				pointer.add(pointer.size(), (pointer.get(pointer.size() - 1) + counter));
+			} else {
+				counter++;
+			}
+		}
+		
+    	for (int i = pointer.size() - 2; i > - 1; i--) {
+    		if (pointer.get(i + 1) - pointer.get(i) == 1) continue;
+    		counter = 1;
+    		offset = 0;
+    		while (pointer.get(i + offset) + counter < pointer.get(i + 1 + offset)) {
+    			if (isDifferent((pointer.get(i + offset)), (pointer.get(i + offset) + counter), nextPos)) {
+    				offset++;
+    				pointer.add(i + offset, (pointer.get(i + offset - 1) + counter));
+    			} else {
+    				counter++;
+    			}
+    		}
+    	}
     }
     
     private boolean isDifferent(int pIndex, int newPIndex, int nextPos) {
