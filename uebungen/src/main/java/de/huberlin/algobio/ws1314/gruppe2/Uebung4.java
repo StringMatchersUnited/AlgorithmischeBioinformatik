@@ -1,6 +1,6 @@
 package de.huberlin.algobio.ws1314.gruppe2;
 
-import de.huberlin.algobio.ws1314.gruppe2.algorithms.SuffixArray;
+import de.huberlin.algobio.ws1314.gruppe2.algorithms.TSuffixArray;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
 import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
@@ -39,11 +39,11 @@ public class Uebung4
 
         Tools.tFreq = Tools.getFrequencies( template.sequence );
         
-        SuffixArray sA = new SuffixArray( template.sequence );
+        TSuffixArray sA = new TSuffixArray( template.sequence );
         
-        for ( FASTASequence pattern : patterns )
-        {
-            sA.search(pattern.sequence);
-        }
+//        for ( FASTASequence pattern : patterns )
+//        {
+//            sA.search(pattern.sequence);
+//        }
     }
 }
