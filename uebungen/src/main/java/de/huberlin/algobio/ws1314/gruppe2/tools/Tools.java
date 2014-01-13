@@ -86,7 +86,9 @@ public class Tools
     		sb.append( positions[0] );
     		for ( int i = 1; i < positions.length; ++i )
     		{
-    			sb.append( ", " ).append( positions[i] );
+    			if (positions[i] > -1) {
+    				sb.append( ", " ).append( positions[i] );
+    			}
     		}
     	}
     	return sb.toString();

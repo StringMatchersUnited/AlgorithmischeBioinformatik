@@ -1,18 +1,17 @@
 package de.huberlin.algobio.ws1314.gruppe2.algorithms;
 
+import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 
-
 public class SuffixArray
 {
-//    private int[] suffix;
-	private int[] aSuffix;
-	private LinkedList<Integer> lBuckets;
+	private int[] aSortedSuffix;
+	private int[] aSuffixInBucket;
+	private int[] aSuffixInBucket2;
+	private int[] aBuckets;
 	
-    private List<Integer> suffix;
-    private List<Integer> pointer;
     private byte[] template;
     private int tLength;
     private int sLength;
@@ -25,53 +24,24 @@ public class SuffixArray
         template = pTemplate;
         tLength = pTemplate.length;
         sLength = tLength + 1;
-        suffix = new ArrayList<Integer>();
-        pointer = new ArrayList<Integer>();
         
-        aSuffix = new int[sLength];
-        lBuckets = new LinkedList<Integer>();
+        aSortedSuffix = new int[sLength];
+        aSuffixInBucket = new int[sLength];
+        aSuffixInBucket2 = new int[sLength];
+        aBuckets = new int[sLength];
         
-        System.out.println( tLength );
-//        suffix = new int[tLength + 1]; // leere Suffix "$"
-        clearSuffixList();
-        for ( int i = 1; i < sLength; i++ )
-        {
-            suffix.add(i - 1);
-        }
-        
-        aSuffix[0] = tLength;
+        aSortedSuffix[0] = tLength;
         for (int i = 1; i < sLength; i++) {
-        	aSuffix[i] = i - 1;
+        	aSortedSuffix[i] = i - 1;
         }
         
-        lBuckets.add(1);
-        
-//        sysoSL();
-        
-//        for (int i = 1; i < suffix.size(); i++) {
-//        	System.out.println(i + "--" + suffix.get(i) + "--" + pTemplate[suffix.get(i)] );
-//        	
-//        }
-
-//        suffixArraySort();
-        initialSort();
-        
-        curPos = 1;
-//        while ((pointer.size() + 1) != suffix.size()) {
-        	System.out.println(pointer.size());
-//        	sysoSL();
-//        	sysoPL();
-        	sort(curPos);
-        	curPos = curPos * 2;
-//        }
-        
-//		sysoSL();
-//    	sysoPL();
+        sort();
     }
     
     private void sort() {
     	List<List<Integer>> buckets = new ArrayList<List<Integer>>();
-    	int suffixIndex = 1; // leeres Zeichen ganz vorn, fällt weg
+    	int suffixIndex = 1;
+    	int bucketSize; // hilfsint für BucketSize
     	
     	for ( int i = 0; i < sizeOfAlph; i++ )
     	{
@@ -80,243 +50,181 @@ public class SuffixArray
     	
     	for ( int i = 0; i < tLength; i++ )
         {
-            buckets.get( template[i] ).add( suffix[i + 1] );
+            buckets.get( template[i] ).add( aSortedSuffix[i + 1] );
         }
     	
+    	aSortedSuffix[0] = tLength; // leeres Zeichen
+    	
+    	// initialisieren mit -1, leeres Zeichen drin [0] = 0
+    	for (int i = 1; i < sLength; i++) {
+    		aBuckets[i] = -1;
+    	}
+    	
+    	int bucket = 0;
+    	int bucketIndex;
     	for (int i = 0; i < buckets.size(); i++) {
-    		for (int j = 0; j < buckets.get(i).size(); j++) {
-    			suffix.add(buckets.get(i).get(j));
-    		}
     		if (buckets.get(i).size() > 0) {
-    			pointer.add(suffixIndex);
-    			suffixIndex = suffixIndex + buckets.get(i).size();
+    			bucketIndex = suffixIndex;
+    			aBuckets[bucketIndex] = 0;
+    			bucket++;
+	    		for (int j = 0; j < buckets.get(i).size(); j++) {
+	    			aSortedSuffix[suffixIndex] = buckets.get(i).get(j);
+	    			aSuffixInBucket[buckets.get(i).get(j)] = bucket;
+	    			aSuffixInBucket2[buckets.get(i).get(j)] = bucketIndex;
+	    			suffixIndex++;
+	    		}
     		}
     	}
-    }
-    
-    private void initialSort() {
-    	List<List<Integer>> buckets = new ArrayList<List<Integer>>();
-    	int suffixIndex = 1; // leeres Zeichen ganz vorn, fällt weg
+    	bucketSize = bucket + 1;
     	
-    	for ( int i = 0; i < sizeOfAlph; i++ )
-    	{
-    		buckets.add( new ArrayList<Integer>() );
-    	}
+    	// rest-sort
     	
-    	for ( int i = 0; i < tLength; i++ )
-        { // leeres Suffix "$" bleibt ganz vorn | + 1 weil er das letzte Zeichen vergisst? (falsche tLength)
-            buckets.get( template[i] ).add( suffix.get(i + 1) );
-        }
+    	int nPos = 1;
+    	int[] aSortedSuffix2 = new int[sLength]; // hilfsarray
     	
-    	// suffix-liste neu machen
-    	clearSuffixList();
-    	
-    	// Auf das suffix-Array zeigen
-    	for (int i = 0; i < buckets.size(); i++) {
-    		for (int j = 0; j < buckets.get(i).size(); j++) {
-//    			System.out.println( buckets.get(i).get(j) + ".." + i + ".." + j);
-    			suffix.add(buckets.get(i).get(j));
-    		}
-    		if (buckets.get(i).size() > 0) {
-    			pointer.add(suffixIndex);
-    			suffixIndex = suffixIndex + buckets.get(i).size();
-    		}
-    	}
-    	
-//    	sysoSL();
-//    	sysoPL();
-    }
-    
-    private void sort(Integer nextPos) {
-    	
-    	for (int i = 0; i < sLength; i++) {
+    	int cnt = 0;
+    	int[] aRef;
+    	int[] aSorted = aSortedSuffix2;
+    	LinkedList<Integer> lHittedBuckets = new LinkedList<Integer>();
+		while (bucketSize < sLength) {
+    		cnt++;
     		
-    	}
-    	
-    	
-    	
-//    	int indexOfBucket;
-//    	int indexToMove;
-//    	int counter;
-//    	int offset;
-//    	List<Integer> pointerInBucket = new ArrayList<Integer>();
-////    	List<Integer> newPointer = new ArrayList<Integer>();
-//    	
-//    	for (int i = 0; i < pointer.size(); i++) {
-//    		pointerInBucket.add(pointer.get(i));
-////    		newPointer.add(pointer.get(i));
-//    	}
-//    	
-//    	
-//    	for ( int i = 0; i < sLength; i++ )
-//        {
-////            System.out.println("suffix.get(i)" + suffix.get(i) + ".." + (suffix.get(i) - 1));
-//            indexOfBucket = getBucketIndex((suffix.get(i) - nextPos));
-//            indexToMove = getSuffixIndex((suffix.get(i) - nextPos), indexOfBucket);
-//            // umsortieren
-//            if ((indexToMove > -1) && (indexOfBucket > -1)) {
-//            	if (indexToMove != pointerInBucket.get(indexOfBucket)) {
-//            		suffix.add(pointerInBucket.get(indexOfBucket), suffix.get(indexToMove));
-//            		suffix.remove(indexToMove + 1);
-//            	}
-//            	pointerInBucket.set(indexOfBucket, (pointerInBucket.get(indexOfBucket) + 1));
-//            }
-//        }
-//    	
-////    	sysoSL();
-////    	sysoPL();
-//    	
-//    	// pointer erweitern
-//    	// von hinten nach vorn
-//    	// für den letzten
-//    	counter = 1;
-//		while (pointer.get(pointer.size() - 1) + counter < sLength) {
-//			if (isDifferent((pointer.get(pointer.size() - 1)), (pointer.get(pointer.size() - 1) + counter), nextPos)) {
-//				pointer.add(pointer.size(), (pointer.get(pointer.size() - 1) + counter));
-//			} else {
-//				counter++;
-//			}
-//		}
-//		
-//		// 
-//    	for (int i = pointer.size() - 2; i > - 1; i--) {
-//    		if (pointer.get(i + 1) - pointer.get(i) == 1) continue;
-//    		counter = 1;
-//    		offset = 0;
-//    		while (pointer.get(i + offset) + counter < pointer.get(i + 1 + offset)) {
-//    			// vergleich
-//    			if (isDifferent((pointer.get(i + offset)), (pointer.get(i + offset) + counter), nextPos)) {
-//    				offset++;
-////    				System.out.println(pointer.get(i + offset) + counter);
-//    				pointer.add(i + offset, (pointer.get(i + offset - 1) + counter));
-//    			} else {
-//    				counter++;
-//    			}
-//    		}
-//    	}
-    	
-//    	sysoSL();
-//    	sysoPL();
-    }
-    
-    private boolean isDifferent(int pIndex, int newPIndex, int nextPos) {
-    	boolean diff = false;
-//    	System.out.println(pIndex + ".." + suffix.get(pIndex) + ".." + newPIndex + ".." + suffix.get(newPIndex));
-    	if ((suffix.get(newPIndex) + nextPos < tLength - 1) && (suffix.get(pIndex) + nextPos < tLength - 1)) {
-    		if (template[suffix.get(pIndex) + nextPos] != template[suffix.get(newPIndex) + nextPos]) {
-    			diff = true;
-//    			System.out.println(template[suffix.get(pIndex) + nextPos] + "!=" + template[suffix.get(newPIndex) + nextPos]);
-    		}
-    	} else {
-    		diff = true;
-    	}
-    	return diff;
-    }
-    
-    private int getBucketIndex(int tIndex) {
-    	int bucketIndex = -1;
-    	
-    	if ((tIndex > -1) && (tIndex < tLength)) {
-    		// basis von pointern nach anfangsbuchstabe suchen
+    		bucketIndex = 0;
     		
-    		for (int i = 0; i < pointer.size(); i++) {
-//    			System.out.println(tIndex + ".." + template[tIndex] + ".." + template[suffix.get(pointer.get(i))]);
-    			if (template[suffix.get(pointer.get(i))] == template[tIndex]) {
+    		if (cnt % 2 == 0) {
+    			aRef = aSortedSuffix2;
+    			aSorted = aSortedSuffix;
+    		} else {
+    			aRef = aSortedSuffix;
+    			aSorted = aSortedSuffix2;
+    		}
+    		
+    		// kopieren
+    		for (int j = 0; j < sLength; j++) {
+    			aSorted[j] = aRef[j];
+    		}
+    		
+    		for (int i = 0; i < sLength; i++) {
+    			if (aBuckets[i] > -1) { // wenn bucket - ende
+    				// neue Buckets
+    				int k = 0;
+					while (lHittedBuckets.size() > 0) {
+						if (sLength > aBuckets[lHittedBuckets.get(k)] + lHittedBuckets.get(k)) {
+							if (aBuckets[aBuckets[lHittedBuckets.get(k)] + lHittedBuckets.get(k)] == - 1 ) {
+								aBuckets[aBuckets[lHittedBuckets.get(k)] + lHittedBuckets.get(k)] = -2;
+							}
+						}
+						lHittedBuckets.remove(k);
+					}
     				bucketIndex = i;
-    				break;
+    			}
+    			// sortieren
+    			if ( (aRef[i] - nPos) > - 1 ) {
+    				aSorted[aSuffixInBucket2[aRef[i] - nPos] + aBuckets[aSuffixInBucket2[aRef[i] - nPos]]] = aRef[i] - nPos;
+					aBuckets[aSuffixInBucket2[aRef[i] - nPos]]++;
+					if (!lHittedBuckets.contains(aSuffixInBucket2[aRef[i] - nPos])) {
+						lHittedBuckets.add(aSuffixInBucket2[aRef[i] - nPos]);
+					}
     			}
     		}
     		
-//    		System.out.println("pointer:" + bucketIndex);
+    		int lastBucket = 0;
+    		bucketSize = 0;
+    		for (int i = 0; i < sLength; i++) {
+    			if (aBuckets[i] != -1) {
+    				aBuckets[i] = 0;
+    				lastBucket = i;
+    				bucketSize++;
+    			}
+    			aSuffixInBucket2[aSorted[i]] = lastBucket;
+    		}
+    		
+    		nPos = nPos * 2;
     	}
-    	return bucketIndex;
+		aSortedSuffix = aSorted;
     }
     
-    private int getSuffixIndex(int tIndex, int bucketIndex) {
-    	int suffixIndex = -1;
-//    	System.out.println(tIndex + ".." + bucketIndex);
+    public void search(byte[] pattern) {
+    	int l = 1;
+    	int r = tLength;
+    	int m = 0;
+    	int f;
+    	LinkedList<Integer> lHits = new LinkedList<Integer>();
+    	int[] aFirstTen = new int[10];
     	
-    	if ((tIndex > -1) && (bucketIndex > -1)) {
-    		
-    		// dann konkret suchen
-    		for (int i = pointer.get(bucketIndex); i < sLength; i++) {
-    			// BIN search
-//    			System.out.println(sIndex + ".." + pointer.get(bucketPointer) + ".." + suffix.get(i));
-    			if (suffix.get(i) == tIndex) {
-    				suffixIndex = i;
+    	for (int i = 0; i < aFirstTen.length; i++) {
+    		aFirstTen[i] = -1;
+    	}
+    	
+    	int index = 0;
+    	while (l < r) {
+    		m = l + ((r - l) / 2);
+    		f = searchFunction(pattern, m);
+    		if (f > 0) { // go up
+    			r = m - 1;
+    		} else if (f < 0) { // go down
+    			l = m + 1;
+    		} else { // occurence
+    			int n = m;
+    			while (searchFunction(pattern, n) == 0) {
+    				index = 0;
+    				for (int i = 0; ( (i < lHits.size()) && i < 10); i++) {
+    					if (lHits.get(i) < aSortedSuffix[n]) {
+    						index++;
+    					} else {
+    						break;
+    					}
+    				}
+    				lHits.add(index, aSortedSuffix[n]);
+    				n--;
+    			}
+    			n = m + 1;
+    			while ((searchFunction(pattern, n) == 0)) {
+    				index = 0;
+    				for (int i = 0; ( (i < lHits.size()) && i < 10); i++) {
+    					if (lHits.get(i) < aSortedSuffix[n]) {
+    						index++;
+    					} else {
+    						break;
+    					}
+    				}
+    				lHits.add(index, aSortedSuffix[n]);
+    				n++;
+    			}
+    			break;
+    		}
+    	}
+    	
+    	for (int i = 0; ( (i < lHits.size()) && i < 10); i++) {
+    		aFirstTen[i] = lHits.get(i);
+    	}
+    	
+    	System.out.println( "> " + Tools.byteArrayToString( pattern ) );
+        System.out.println( ">> Length: " + pattern.length );
+        System.out.println( ">> Occurrences: " + lHits.size() );
+        System.out.println( ">> Positions: " + Tools.printPositions( aFirstTen ) );
+        System.out.println();
+    }
+    
+    private int searchFunction(byte[] pattern, int index) {
+    	// - 1: kleiner als Pattern | 1: größer als pattern | 0: treffer 
+    	int returnVal = 0;
+    	if (index > sLength - 1) {
+    		returnVal = -1;
+    	} else if (aSortedSuffix[index] + pattern.length > sLength - 1) {
+    		returnVal = -1;
+    	} else {
+    		for (int i = 0; i < pattern.length; i++) {
+    			if (template[aSortedSuffix[index] + i] != pattern[i]) {
+    				if (template[aSortedSuffix[index] + i] < pattern[i]) {
+    					returnVal = -1;
+    				} else {
+    					returnVal = 1;
+    				}
     				break;
     			}
     		}
-    		
-//    		System.out.println("sIndex:" + suffixIndex);
-    		
     	}
-    	return suffixIndex;
+    	return returnVal;
     }
-    
-    private void clearSuffixList() {    	
-    	suffix.clear();
-    	suffix.add(tLength);
-    }
-    
-    private void sysoSL() {
-    	System.out.println("suffix:");
-    	for (int i = 0; i < suffix.size(); i++) {
-    		System.out.println("i:" + i + "|val:" + suffix.get(i));
-    	}
-    }
-    
-    private void sysoPL() {
-    	System.out.println("pointer:");
-    	for (int i = 0; i < pointer.size(); i++) {
-    		System.out.println("i:" + i + "|val:" + pointer.get(i) + "sign" + suffix.get(pointer.get(i)));
-    	}
-    }
-    
-
-//    private void suffixArraySort()
-//    {
-//        // bucketSort
-//        // momentan zu viele Listeneintrï¿½ge... besserer Einfall?
-//        List<List<Integer>> buckets = new ArrayList<List<Integer>>();
-//
-//        for ( int i = 0; i < sizeOfAlph; i++ )
-//        {
-//            buckets.add( new ArrayList<Integer>() );
-//        }
-//
-//        for ( int i = 0; i < tLength; i++ )
-//        { // leeres Suffix "$" bleibt ganz vorn | + 1 weil er das letzte Zeichen vergisst? (falsche tLength)
-//            buckets.get( template[i] ).add( suffix[i + 1] );
-//            System.out.println( "..." + template[i] );
-//        }
-//
-//        for ( int i = 0; i < sizeOfAlph; i++ )
-//        {
-//            bucketSort( buckets.get( i ), 1 );
-//        }
-//    }
-//
-//    private void bucketSort( List<Integer> indizes, int nextPos )
-//    {
-//        int endPos = 2 * nextPos - 1;
-//
-//        // indizes.get(i) - nextPos im Bucket nach vorn schieben
-//
-//        if ( indizes.size() < 2 )
-//        {
-//            return;
-//        } else
-//        {
-//            for ( int i = 0; i < indizes.size(); i++ )
-//            {
-//                for ( int j = nextPos; j <= endPos; j++ )
-//                {
-//                    System.out.println( "pos:" + indizes.get( i ) + "|" + template[indizes.get( i )] + "last:" + template[indizes.get( i ) - j] );
-//                }
-//                // sortieren
-//                //new bucketsort
-//            }
-//        }
-//    }
 }
