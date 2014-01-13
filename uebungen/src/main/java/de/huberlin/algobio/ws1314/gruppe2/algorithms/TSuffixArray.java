@@ -54,6 +54,7 @@ public class TSuffixArray
         }
     	
     	lBuckets.add(new int[] {0, 0}); // leeres Zeichen
+    	aSortedSuffix[0] = tLength; // leeres Zeichen
     	
     	int bucket = 0;
     	for (int i = 0; i < buckets.size(); i++) {
@@ -79,42 +80,42 @@ public class TSuffixArray
     	
     	int nPos = 1;
     	int[] aSortedSuffix2 = new int[sLength]; // hilfsarray
-    	int[] aSuffixInBucket2 = new int[sLength]; // hilfsarray
 //    	LinkedList<int[]> lNewBuckets = (LinkedList<int[]>) lBuckets.clone(); // hilfsliste
     	
     	int cnt = 0;
     	int bucketSize; // hilfsint für anfangsBucketSize
     	int[] aRef;
     	int[] aSorted;
-    	int[] aRefInBucket;
-    	int[] aSortedInBucket;
-//    	while (lBuckets.size() < tLength) {
+    	LinkedList<Integer> lHittedBuckets = new LinkedList<Integer>();
+    	while (lBuckets.size() < sLength) {
     		cnt++;
-    		nPos = nPos;
     		bucketSize = lBuckets.size();
     		
 //    		System.out.println("nextPos: " + nPos);
     		if (cnt % 2 == 0) {
     			aRef = aSortedSuffix2;
     			aSorted = aSortedSuffix;
-    			aRefInBucket = aSuffixInBucket2;
-    			aSortedInBucket = aSuffixInBucket;
     		} else {
     			aRef = aSortedSuffix;
     			aSorted = aSortedSuffix2;
-    			aRefInBucket = aSuffixInBucket;
-    			aSortedInBucket = aSuffixInBucket2;
+    		}
+    		
+    		// kopieren
+    		for (int j = 0; j < sLength; j++) {
+    			aSorted[j] = aRef[j];
     		}
 //    		System.out.println("aRef: " + aRef);
 //    		System.out.println("aSorted: " + aSorted);^
     		
-    		System.out.println(sLength);
+//    		System.out.println(sLength);
     		
     		int i = 0; // elemente in suffixarray
     		while (i < sLength) {
+    			System.out.println("sortieren und neue Buckets");
     			for (int j = 0; j < bucketSize; j++) {
 					if ((lBuckets.get(j)[0] + 1 < sLength) || (lBuckets.get(j)[0] + 1 != lBuckets.get(j + 1)[0])) { // bucket größer als 1 element
 						// sortieren, pointer erhöhen
+//						System.out.println("sortieren");
 						int limit;
 						if ((j + 1) == bucketSize) {
 							limit = sLength;
@@ -126,42 +127,69 @@ public class TSuffixArray
 							if ((aRef[k] - nPos) > -1) {
 //    			            	System.out.println("...");
 //								System.out.println(k + "." + j + "." + (aRef[k] - nPos));
-//    			            	System.out.println(aRefInBucket[aRef[i] - nPos]);
-//    			            	System.out.println(lBuckets.get(aRefInBucket[aRef[i] - nPos] - 1)[0]);
+//    			            	System.out.println(aSuffixInBucket[aRef[i] - nPos]);
+//    			            	System.out.println(lBuckets.get(aSuffixInBucket[aRef[i] - nPos] - 1)[0]);
 //    			            	System.out.println(aRef[i] - nPos);
-								aSorted[lBuckets.get(aRefInBucket[aRef[k] - nPos])[0] + lBuckets.get(aRefInBucket[aRef[k] - nPos])[1]] = aRef[k] - nPos;
-								lBuckets.get(aRefInBucket[aRef[k] - nPos])[1]++;
+								aSorted[lBuckets.get(aSuffixInBucket[aRef[k] - nPos])[0] + lBuckets.get(aSuffixInBucket[aRef[k] - nPos])[1]] = aRef[k] - nPos;
+								lBuckets.get(aSuffixInBucket[aRef[k] - nPos])[1]++;
+								if (!lHittedBuckets.contains(aSuffixInBucket[aRef[k] - nPos])) {
+									lHittedBuckets.add(aSuffixInBucket[aRef[k] - nPos]);
+								}
 							}
 						}
 						i = limit;
 						
-			            int n;
-			            boolean exists;
-			            for (int k = 0; k < bucketSize; k++) {
-    						if ((lBuckets.get(k)[1] > 0) && (lBuckets.get(k)[0] + lBuckets.get(k)[1] < sLength)) { // keine neuen Buckets (-1) und keine Buckets in denen noch nichts passiert ist (0)
-    							exists = false;
-    							for (int l = 0; l < lBuckets.size(); l++) {
-    								if ((lBuckets.get(l)[0] == lBuckets.get(k)[0] + lBuckets.get(k)[1])) {
-    									exists = true;
-    									break;
-    								}
-    							}
-    							if (!exists) {
-    								lBuckets.add(new int[] {lBuckets.get(k)[0] + lBuckets.get(k)[1], k});
-    							}
-    						}
-			            }
-			            
-						i++;
+//						System.out.println("neue Buckets");
+						
+						int k = 0;
+						while (lHittedBuckets.size() > 0) {
+//							System.out.println(lHittedBuckets.get(k));
+							if (lBuckets.get(lHittedBuckets.get(k))[0] + lBuckets.get(lHittedBuckets.get(k))[1] < sLength) { // pointer überprüfen nicht notwendig, ist zwansgläufig größer als 0
+								if (lHittedBuckets.get(k) == lBuckets.size() - 1) {
+									if (sLength != lBuckets.get(lHittedBuckets.get(k))[0] + lBuckets.get(lHittedBuckets.get(k))[1]) {
+										lBuckets.add(new int[] {lBuckets.get(lHittedBuckets.get(k))[0] + lBuckets.get(lHittedBuckets.get(k))[1], lHittedBuckets.get(k)});
+									}
+								} else {
+									if (lBuckets.get(lHittedBuckets.get(k) + 1)[0] != lBuckets.get(lHittedBuckets.get(k))[0] + lBuckets.get(lHittedBuckets.get(k))[1]) {
+										lBuckets.add(new int[] {lBuckets.get(lHittedBuckets.get(k))[0] + lBuckets.get(lHittedBuckets.get(k))[1], lHittedBuckets.get(k)});
+									}
+								}
+							}
+							lHittedBuckets.remove(0);
+						}
+						
+						// extrem langsam
+						// liste mit betroffen Buckets
+//			            int n;
+//			            boolean exists;
+//			            for (int k = 0; k < bucketSize; k++) {
+//    						if ((lBuckets.get(k)[1] > 0) && (lBuckets.get(k)[0] + lBuckets.get(k)[1] < sLength)) { // keine neuen Buckets (-1) und keine Buckets in denen noch nichts passiert ist (0)
+//    							exists = false;
+//    							for (int l = 0; l < lBuckets.size(); l++) {
+//    								if ((lBuckets.get(l)[0] == lBuckets.get(k)[0] + lBuckets.get(k)[1])) {
+//    									exists = true;
+//    									break;
+//    								}
+//    							}
+//    							if (!exists) {
+//    								lBuckets.add(new int[] {lBuckets.get(k)[0] + lBuckets.get(k)[1], k});
+//    							}
+//    						}
+//			            }
 					} else { // bucket nur 1 groß
 						i++;
 					}
     			}
     		}
+    		System.out.println("bucket sortieren");
     		
     		// buckets-reihenfolge sortieren
     		int[] splittedBuckets = new int[lBuckets.size() - bucketSize];
     		int[] moved;
+    		// vorher auf 0 setzen
+    		// aRef nutzen und aRef[x] um 1 erhöhen
+    		// danach durchlauf und alles aufaddieren für jedes x
+    		// splittedBuckets vorher sortieren?
     		int offset;
     		for (int k = 0; k < lBuckets.size() - bucketSize; k++) {
     			offset = 0;
@@ -174,36 +202,54 @@ public class TSuffixArray
     			lBuckets.add(moved[1] + offset + 1, moved);
     			splittedBuckets[k] = moved[1]; 
     		}
+    		System.out.println("RefBucket, BucketSize: " + lBuckets.size());
     		
+    		// dauert, zu viele Zugriffe auf Array/Liste?
+    		// nutzen des offsets aus bucket sortieren?
     		// neu in welchem bucket
+    		int index;
     		for (int k = 1; k < lBuckets.size() - 1; k++) {
-    			for (int l = 0; l < lBuckets.get(k + 1)[0] - lBuckets.get(k)[0]; l++) {
-    				aSuffixInBucket[aSorted[lBuckets.get(k)[0] + l]] = k;
+    			lBuckets.get(k)[1] = 0; // pointer zurück
+    			index = lBuckets.get(k)[0];
+    			if (k % 100 == 0) {
+    				System.out.println(k);
+    			}
+    			for (int l = 0; l < lBuckets.get(k + 1)[0] - index; l++) {
+    				aSuffixInBucket[aSorted[index + l]] = k;
     			}
     		}
     		
     		// für den letzten extra
-    		for (int l = 0; l < sLength - lBuckets.getLast()[0]; l++) {
-				aSuffixInBucket[aSorted[lBuckets.getLast()[0] + l]] = lBuckets.size() - 1;
+    		lBuckets.getLast()[1] = 0; // pointer zurück
+    		index = lBuckets.getLast()[0];
+    		for (int l = 0; l < sLength - index; l++) {
+				aSuffixInBucket[aSorted[index + l]] = lBuckets.size() - 1;
 			}
     		
-    		System.out.println("2. Zeichen");
+//    		// pointer zurücksetzen
+//    		for (int k = 0; k < lBuckets.size(); k++) {
+//    			lBuckets.get(k)[1] = 0;
+//    		}
     		
-    		for (int k = 0; k < sLength; k++) {
-    			System.out.println(aSorted[k]);
-    		}
+    		nPos = nPos * 2;
     		
-    		System.out.println("--");
+    		System.out.println(nPos + " Zeichen");
     		
-    		for (int k = 0; k < sLength; k++) {
-    			System.out.println(aSuffixInBucket[k]);
-    		}
-    		
-    		System.out.println("--");
-    		
-    		for (int k = 0; k < lBuckets.size(); k++) {
-    			System.out.println(lBuckets.get(k)[0] + "." + lBuckets.get(k)[1]);
-    		}
+//    		for (int k = 0; k < sLength; k++) {
+//    			System.out.println(aSorted[k]);
+//    		}
+//    		
+//    		System.out.println("--");
+//    		
+//    		for (int k = 0; k < sLength; k++) {
+//    			System.out.println(aSuffixInBucket[k]);
+//    		}
+//    		
+//    		System.out.println("--");
+//    		
+//    		for (int k = 0; k < lBuckets.size(); k++) {
+//    			System.out.println(lBuckets.get(k)[0] + "." + lBuckets.get(k)[1]);
+//    		}
     		
     		// 
     		
@@ -216,11 +262,7 @@ public class TSuffixArray
 //    		for (int i = 0; i < lBuckets.size(); i++) {
 //        		System.out.println(lBuckets.get(i)[0] + "." + lBuckets.get(i)[1]);
 //    		}
-    	
-    	// bucketPointer zurücksetzen
-    		
-//    		lBuckets = lNewBuckets.clone();
-//    	}
+    	}
     }
     
     private void sort(Integer nextPos) {
