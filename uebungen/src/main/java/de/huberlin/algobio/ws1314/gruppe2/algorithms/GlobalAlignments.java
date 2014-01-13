@@ -17,6 +17,7 @@ public class GlobalAlignments
      */
     private HashMap<ArrayList<Integer>, int[][]> matrices = new HashMap<ArrayList<Integer>, int[][]>();
 
+
     public GlobalAlignments( ArrayList<ArrayList<FASTASequence>> species, ArrayList<String> fileNames )
     {
         int genomesCount = species.get( 0 ).size();

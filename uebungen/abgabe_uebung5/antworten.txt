@@ -1,36 +1,36 @@
 Aufgabe 3)
-Formel zur Berechnung aller Pfade durch eine Matrix der Größe m x n:
+Formel zur Berechnung aller Pfade durch eine Matrix der GrÃ¶ÃŸe m x n:
 
 i = {1, .., n}
 j = {1, .., m}
 
-		{ 1						, falls i = 1
-RF (i , j) = 	{ 1						, falls j = 1
-		{ RF(i - 1, j) + RF(i, j - 1) + RF(i - 1, j - 1), sonst
+             { 1                                             , falls i = 1
+RF (i , j) = { 1                                             , falls j = 1
+             { RF(i - 1, j) + RF(i, j - 1) + RF(i - 1, j - 1), sonst
 
 Beispiel:
 
 Struktur einer 2 x 3 Matrix:
 
-	0	0	0
-	0	0	0
+    0    0    0
+    0    0    0
 
 Erwartete Pfade: 5 (Durch x dargestellt)
 
-	x	0	0
-	x	x	x
+    x    0    0
+    x    x    x
 
-	x	0	0
-	0	x	x
+    x    0    0
+    0    x    x
 
-	x	x	0
-	0	x	x
+    x    x    0
+    0    x    x
 
-	x	x	0
-	0	0	x
+    x    x    0
+    0    0    x
 
-	x	x	x
-	0	0	x
+    x    x    x
+    0    0    x
 
 RF (3, 2) = RF(2, 2) + RF(3, 1) + RF(2, 1)
 ---
