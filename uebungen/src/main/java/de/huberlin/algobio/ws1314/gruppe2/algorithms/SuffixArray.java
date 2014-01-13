@@ -41,7 +41,7 @@ public class SuffixArray
     private void sort() {
     	List<List<Integer>> buckets = new ArrayList<List<Integer>>();
     	int suffixIndex = 1;
-    	int bucketSize; // hilfsint für BucketSize
+    	int bucketSize; // hilfsint fÃ¼r BucketSize
     	
     	for ( int i = 0; i < sizeOfAlph; i++ )
     	{
@@ -207,7 +207,7 @@ public class SuffixArray
     }
     
     private int searchFunction(byte[] pattern, int index) {
-    	// - 1: kleiner als Pattern | 1: größer als pattern | 0: treffer 
+    	// - 1: kleiner als Pattern | 1: grÃ¶ÃŸer als pattern | 0: treffer 
     	int returnVal = 0;
     	if (index > sLength - 1) {
     		returnVal = -1;
