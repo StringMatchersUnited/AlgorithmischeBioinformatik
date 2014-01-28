@@ -22,7 +22,6 @@ public class IntArray implements Serializable
         arr.add( new int[capacity] );
     }
 
-
     public void add( int i )
     {
         int arrIndex = position / capacity;

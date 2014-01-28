@@ -5,13 +5,8 @@ import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
 import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class Uebung4
@@ -26,10 +21,10 @@ public class Uebung4
 
         templateFileName = args[0];
         patternFileName = args[1];
-        
+
         try
         {
-        	template = new FASTAReader( templateFileName ).getFastaSequence( 0 );
+            template = new FASTAReader( templateFileName ).getFastaSequence( 0 );
             patterns = new FASTAReader( patternFileName ).getFastaSequences();
         } catch ( IOException e )
         {
@@ -38,12 +33,12 @@ public class Uebung4
         }
 
         Tools.tFreq = Tools.getFrequencies( template.sequence );
-        
+
         SuffixArray sA = new SuffixArray( template.sequence );
-        
+
         for ( FASTASequence pattern : patterns )
         {
-            sA.search(pattern.sequence);
+            sA.search( pattern.sequence );
         }
     }
 }

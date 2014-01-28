@@ -11,11 +11,6 @@ public class QGramIndex
 {
     private HashMap<String, IntArray> qGramIndex = new HashMap<String, IntArray>();
 
-    public HashMap<String, IntArray> getQgramIndex()
-    {
-        return qGramIndex;
-    }
-
     public QGramIndex( int q, byte[] template, String indexFileName )
     {
         TimeMeasure.start( "create_index" );
@@ -23,6 +18,10 @@ public class QGramIndex
         TimeMeasure.stop( "create_index" );
     }
 
+    public HashMap<String, IntArray> getQgramIndex()
+    {
+        return qGramIndex;
+    }
 
     private void create_index( int q, byte[] t )
     {

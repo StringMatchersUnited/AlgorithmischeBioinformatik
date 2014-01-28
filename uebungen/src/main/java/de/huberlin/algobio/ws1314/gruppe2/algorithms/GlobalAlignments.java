@@ -6,7 +6,6 @@ import de.huberlin.algobio.ws1314.gruppe2.tools.Tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
 
 
 public class GlobalAlignments
@@ -49,7 +48,6 @@ public class GlobalAlignments
         }
     }
 
-
     private int[][] createMatrix( byte[] stringA, byte[] stringB, ArrayList<Integer> key )
     {
         int[][] matrix = new int[stringA.length][stringB.length];
@@ -66,12 +64,10 @@ public class GlobalAlignments
         return matrix;
     }
 
-
     private int ratingFunction( byte a, byte b )
     {
         return a == b ? 0 : -1;
     }
-
 
     private int calcGlobalAlignment( int[][] matrix )
     {

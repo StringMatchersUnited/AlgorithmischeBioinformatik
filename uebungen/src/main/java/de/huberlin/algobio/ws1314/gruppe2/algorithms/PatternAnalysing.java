@@ -28,7 +28,6 @@ public class PatternAnalysing
 
 //    		System.out.println(praefix[position]);
         }
-
     }
 
     public int[] getPraefix()

@@ -81,16 +81,18 @@ public class Tools
 
     public static String printPositions( int[] positions )
     {
-    	StringBuilder sb = new StringBuilder();
-    	if (positions.length > 0) {
-    		sb.append( positions[0] );
-    		for ( int i = 1; i < positions.length; ++i )
-    		{
-    			if (positions[i] > -1) {
-    				sb.append( ", " ).append( positions[i] );
-    			}
-    		}
-    	}
-    	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        if ( positions.length > 0 )
+        {
+            sb.append( positions[0] );
+            for ( int i = 1; i < positions.length; ++i )
+            {
+                if ( positions[i] > -1 )
+                {
+                    sb.append( ", " ).append( positions[i] );
+                }
+            }
+        }
+        return sb.toString();
     }
 }
