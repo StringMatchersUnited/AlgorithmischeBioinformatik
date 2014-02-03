@@ -24,7 +24,9 @@ public class NeighborJoining
     	int curMinX; // dazu das x
     	int curMinY; // dazu das y
     	int u;
-    	int offset; 
+    	int offset;
+    	
+    	final int maxValue = 100000;
     	
     	// initial spalten benennen
     	for ( int i = 0; i < mLength; i++ ) {
@@ -89,7 +91,7 @@ public class NeighborJoining
     			}
     		}
     		// hoher wert für gleiche sequenz
-    		aNew[curLength - 2][curLength - 2] = 100;
+    		aNew[curLength - 2][curLength - 2] = maxValue;
     		
     		// (4.) alte Knoten loeschen -> entfaellt da 2 matrixen
     		
@@ -105,20 +107,14 @@ public class NeighborJoining
     				sequence[i - offset] = sequence[i];
     			}
     		}
-    		sequence[curLength - 2] = sequence[curMinY] + sequence[curMinX];
+    		sequence[curLength - 2] = sequence[curMinX] + sequence[curMinY];
     		
     		// curLength runtersetzen
     		curLength--;
     		
-//    		for ( int i = 0; i < curLength; i++ ) {
-//    			for ( int j = 0; j < curLength; j++ ) {
-//    				System.out.print(aNew[i][j] + "  ");
-//    			}
-//    			System.out.println();
-//    		}
     	}
     	
     	// letzte Ausgabe der beiden letzten Spalten
-		System.out.println("(" + sequence[1] + "," + sequence[0] + ")");
+		System.out.println("(" + sequence[0] + "," + sequence[1] + ")");
     }
 }
