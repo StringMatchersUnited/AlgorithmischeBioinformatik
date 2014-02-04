@@ -16,33 +16,39 @@ public class GlobalAlignments
      */
     private HashMap<ArrayList<Integer>, int[][]> matrices = new HashMap<ArrayList<Integer>, int[][]>();
 
+    private HashMap<Byte, HashMap<Byte, Integer>> substitutionMatrix;
 
-    public GlobalAlignments( ArrayList<ArrayList<FASTASequence>> species, ArrayList<String> fileNames )
+    public GlobalAlignments( ArrayList<ArrayList<FASTASequence>> species,
+                             HashMap<Byte, HashMap<Byte, Integer>> substitutionMatrix, ArrayList<String> fileNames )
     {
-        int genomesCount = species.get( 0 ).size();
+        this.substitutionMatrix = substitutionMatrix;
+        int genomesCount = species.get(0).size();
         // genomes
         for ( int k = 0; k < genomesCount; ++k )
         {
             System.out.println();
-            System.out.println( Tools.byteArrayToString( Arrays.copyOfRange( species.get( 0 ).get( k ).description, 2, species.get( 0 ).get( k ).description.length ) ) );
-            System.out.println( "==============================" );
+            System.out.println(Tools.byteArrayToString(Arrays.copyOfRange(species.get(0).get(k).description, 2,
+                                                                          species.get(0).get(k).description.length)));
+            System.out.println("==============================");
 
             // speciesA
             for ( int i = 0; i < species.size(); ++i )
             {
-                ArrayList<FASTASequence> genomesA = species.get( i );
+                ArrayList<FASTASequence> genomesA = species.get(i);
                 // speciesB
                 for ( int j = i + 1; j < species.size(); ++j )
                 {
-                    ArrayList<FASTASequence> genomesB = species.get( j );
+                    ArrayList<FASTASequence> genomesB = species.get(j);
                     ArrayList<Integer> matrixKey = new ArrayList<Integer>();
-                    matrixKey.add( i ); // speciesA
-                    matrixKey.add( j ); // speciesB
-                    matrixKey.add( k ); // genome
-                    int[][] matrix = createMatrix( genomesA.get( k ).sequence, genomesB.get( k ).sequence, matrixKey );
-                    int globalAlignmentScore = calcGlobalAlignment( matrix );
+                    matrixKey.add(i); // speciesA
+                    matrixKey.add(j); // speciesB
+                    matrixKey.add(k); // genome
+                    byte[] A = genomesA.get(k).sequence;
+                    byte[] B = genomesB.get(k).sequence;
+                    int[][] matrix = createMatrix(A, B, matrixKey);
+                    int globalAlignmentScore = calcGlobalAlignment(matrix, A, B);
 
-                    System.out.println( fileNames.get( i ) + ", " + fileNames.get( j ) + ": " + globalAlignmentScore );
+                    System.out.println(fileNames.get(i) + ", " + fileNames.get(j) + ": " + globalAlignmentScore);
                 }
             }
         }
@@ -55,7 +61,7 @@ public class GlobalAlignments
         {
             for ( int j = 0; j < stringB.length; ++j )
             {
-                matrix[i][j] = ratingFunction( stringA[i], stringB[j] );
+                matrix[i][j] = ratingFunction(stringA[i], stringB[j]);
             }
         }
         // TODO: maybe we need to put all matrices for later use...
@@ -66,33 +72,62 @@ public class GlobalAlignments
 
     private int ratingFunction( byte a, byte b )
     {
-        return a == b ? 0 : -1;
+        return substitutionMatrix.get(a).get(b);
     }
 
-    private int calcGlobalAlignment( int[][] matrix )
+    private int calcGlobalAlignment( int[][] matrix, byte[] A, byte[] B )
     {
-        int i = 0;
-        int j = 0;
-        int score = 0;
+        int i = A.length - 1;
+        int j = B.length - 1;
+        System.out.println(i);
+        System.out.println(j);
+        int score;
 
-        while ( i < matrix.length - 1 && j < matrix[i].length - 1 )
-        {
-            int horizontal = matrix[i + 1][j];
-            int vertical = matrix[i][j + 1];
-            int diagonal = matrix[i + 1][j + 1];
-            int max = Math.max( horizontal, Math.max( vertical, diagonal ) );
+        score = d(matrix, i, j, A, B);
 
-            // add step to score
-            score += max;
-
-            if ( horizontal == max ) ++i;
-            else if ( vertical == max ) ++j;
-            else if ( diagonal == max )
-            {
-                ++i;
-                ++j;
-            }
-        }
         return score;
+    }
+
+    private int d( int[][] matrix, int i, int j, byte[] A, byte[] B )
+    {
+        System.out.println("i=" + i + ", j=" + j);
+        if ( i == 0 )
+        {
+            System.out.println("i==0");
+            return j;
+        }
+        else if ( j == 0 )
+        {
+            System.out.println("j==0");
+            return i;
+        }
+        else
+        {
+            return min(d(matrix, i - 1, j, A, B) + 1,
+                       d(matrix, i, j - 1, A, B) + 1,
+                       d(matrix, i - 1, j - 1, A, B) + t(A[i], B[j]));
+        }
+    }
+
+    private int min( int a, int b, int c )
+    {
+        if ( a <= b && a <= c )
+            return a;
+        else if ( b <= a && b <= c )
+            return b;
+        else
+            return c;
+    }
+
+    private int t( byte a, byte b )
+    {
+        if ( a != b )
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 }

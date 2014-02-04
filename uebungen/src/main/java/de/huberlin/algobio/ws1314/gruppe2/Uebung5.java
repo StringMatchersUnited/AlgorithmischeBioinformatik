@@ -3,6 +3,7 @@ package de.huberlin.algobio.ws1314.gruppe2;
 import de.huberlin.algobio.ws1314.gruppe2.algorithms.GlobalAlignments;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTAReader;
 import de.huberlin.algobio.ws1314.gruppe2.io.FASTASequence;
+import de.huberlin.algobio.ws1314.gruppe2.io.SubstitutionMatrixReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,9 +15,9 @@ public class Uebung5
 {
     public static void main( String[] args )
     {
-        if ( args.length < 1 )
+        if ( args.length < 2 )
         {
-            System.err.println( "Sorry bro, please specify directory where the cool files are." );
+            System.err.println( "Aufruf: assignment5.jar <Verzeichnis, in dem ausschliesslich die fasta Files liegen> <substitutions-Matrix_datei>" );
             System.exit( 1 );
         }
 
@@ -40,6 +41,14 @@ public class Uebung5
             return;
         }
 
-        new GlobalAlignments( species, fileNames );
+        try
+        {
+            SubstitutionMatrixReader substitutionMatrixReader = new SubstitutionMatrixReader(args[1]);
+            new GlobalAlignments( species, substitutionMatrixReader.substitutionMatrix, fileNames );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
     }
 }

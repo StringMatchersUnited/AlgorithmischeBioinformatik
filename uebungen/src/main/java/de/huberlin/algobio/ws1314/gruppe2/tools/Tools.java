@@ -95,4 +95,10 @@ public class Tools
         }
         return sb.toString();
     }
+
+    public static int byteArrayToInt( byte[] number )
+    {
+        String s = byteArrayToString(number);
+        return Integer.parseInt(s);
+    }
 }
