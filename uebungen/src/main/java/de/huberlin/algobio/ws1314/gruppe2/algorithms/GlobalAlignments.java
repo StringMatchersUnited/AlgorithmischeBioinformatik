@@ -79,8 +79,6 @@ public class GlobalAlignments
     {
         int i = A.length - 1;
         int j = B.length - 1;
-        System.out.println(i);
-        System.out.println(j);
         int score;
 
         score = d(matrix, i, j, A, B);
@@ -90,15 +88,15 @@ public class GlobalAlignments
 
     private int d( int[][] matrix, int i, int j, byte[] A, byte[] B )
     {
-        System.out.println("i=" + i + ", j=" + j);
+//        System.out.println("i=" + i + ", j=" + j);
         if ( i == 0 )
         {
-            System.out.println("i==0");
+//            System.out.println("i==0");
             return j;
         }
         else if ( j == 0 )
         {
-            System.out.println("j==0");
+//            System.out.println("j==0");
             return i;
         }
         else
