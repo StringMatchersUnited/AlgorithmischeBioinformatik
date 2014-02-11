@@ -20,6 +20,11 @@ public class BYP
     	// for debug
     	this.id = id;
     	
+    	int r;
+		int curK;
+		byte[] part;
+		boolean hit;
+    	
     	template = pTemplate;
     	aSortedSuffix = suffix;
     	
@@ -27,69 +32,92 @@ public class BYP
     	sLength = tLength + 1;
     	
     	// Hits direkt in Datei schreiben?
-    	
     	for ( int i = 0; i < pattern.size(); i++ ) {
     		// for debug
-    		pid = i +1;
+    		pid = i + 1;
     		// editabstand = 0 ?
     		if ( k == 0 ) {
     			// gleich langes template & pattern
     			if ( tLength == pattern.get(i).length ) {
     				// direkter Vergleich mit SuffixArray-Suche
     				if ( searchSuffixArray( pattern.get( i ) ) ) {
-    					System.out.println("T:" + id + ",P:" + ( i + 1 ));
+    					System.out.println(id + ":" + ( i + 1 ));
     				}
     			}
     		} else {
-    			
+    			// BYP
+    			if ( Math.abs( tLength - pattern.get(i).length ) < k ) {
+    				curK = k;
+    				hit = false;
+    				
+    				// 1. Partition
+    				r = ( pattern.get(i).length / (k + 1) );
+    				part = new byte[r];
+    				
+    				// 2. Search
+    				for ( int l = 0; l < k; l++ ) {
+    					for ( int j = 0; j < r; j++ ) {
+    						part[j] = pattern.get(i)[ j + ( l * r ) ];
+    					}
+    					if ( searchSuffixArray( part ) ) {
+    						hit = true;
+    						break;
+    					}
+    				}
+    				
+    				// 3. Check
+    				if ( check(pattern.get(i), k) < ( k + 1 ) ) {
+    					// suffixArray-search mit k
+    					System.out.println(id + ":" + ( i + 1 ));
+    				}
+    			}
     		}
     	}
-    	
-    	
-    	
-    	
-//        // aus Datei oder per parameter
-//    	int k = 2; // edit-abstand, laut aufgabe letzter wert einer Zeile
-//    	int p = pattern.length;
-//    	int t = 30;
-//    	int r;
-//    	
-//    	// für potentielle Treffer
-//    	// Array oder Liste ? (Wenig treffer !!je Partition!! zu erwarten bei der Aufgabenstellung, oder?)
-//    	
-//    	// int[] potHits = new int[k + 1];
-//    	// List<Integer> buckets = new ArrayList<Integer>();
-//    	
-//    	// 1. Partition
-//    	// Berechnung der Länge einer Patition
-//    	
-//    	r = ( t / (k + 1) ); // länge einer patition
-//    	
-//    	
-//    	// 2. Search
-//    	// Suche Teilstring exakt in T -> qGram
-//    	// an Länge der qGramme denken !!!
-//    	
-//    	for ( int i = 0; i < ( k + 1 ); i++ ) { // Partitionen
-//    		for ( int j = 0; j < r; j++ ) {
-//    			// potentielles vorkommen an stelle x ( = j + ( i * r ) )
-//    			pattern[ j + ( i * r ) ] // Zugriff mit verschiebung nach aktueller Partition
-//    		}
-//    	}
-//    	
-//    	// 3. Check
-//    	// Prüfe alle potentiellen vorkommen
-//    	// länge eines Treffers im schlimmsten fall p + k
-//    	
-//    	// Sei i die Startposition einer Partition P‘ von P in T
-//    	// Wir müssen testen , ob um T[i; i+r ] herum ein k - Difference Vorkommen von P liegt
-//    	// Ein solches Vorkommen kann im schlimmsten Fall n+k Zeichen lang sein
-//    	// Also alignieren wir T[i - n - k .. i+r+n+k ] mit P
-    	
-    	
     }
     
+    private int check ( byte[] pattern, int k ) {
+    	boolean hit = false;
+    	int[][] matrix = new int[pattern.length + 1][tLength + 1];
+    	
+    	for ( int i = 1; i < pattern.length; i++ ) {
+    		matrix[i][0] = i;
+    	}
+    	for ( int i = 1; i < tLength; i++ ) {
+    		matrix[0][i] = i;
+    	}
+
+    	
+    	for ( int i = 1; i < pattern.length + 1; i++ ) {
+    		for ( int j = i - k; j < ( i + k + 1); j++ ) {
+    			if ( ( j < 1 ) || ( j > tLength ) ) {
+    				continue;
+    			}
+    			matrix[i][j] = matrix[i - 1][j - 1] + equal( pattern[i - 1], template[j - 1] );
+    			
+    			if ( j < ( i + k ) ) {
+    				matrix[i][j] = Math.min(matrix[i][j], matrix[i - 1][j] + 1);
+    			}
+    			if ( j > ( i - k ) ) {
+    				matrix[i][j] = Math.min(matrix[i][j], matrix[i][j - 1] + 1);
+    			}
+    		}
+    	}
+//    	for ( int i = 0; i < pattern.length + 1; i++ ) {
+//    		for ( int j = 0; j < tLength + 1; j++ ) {
+//    			System.out.print(matrix[i][j] + " ");
+//    		}
+//    		System.out.println();
+//    	}
+    	return matrix[pattern.length][tLength];
+    }
     
+    private int equal ( byte p, byte t) {
+    	if ( p == t ) {
+    		return 0;
+    	} else {
+    		return 1;
+    	}
+    }
     
     
     // aus SuffixArray.java
